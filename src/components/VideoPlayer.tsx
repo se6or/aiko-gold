@@ -23,6 +23,8 @@ export interface PlayerSource {
 interface PlayerProps {
   source: PlayerSource;
   onClose: () => void;
+  onPlayingChange?: (playing: boolean) => void;
+  onRequestToggle?: (toggle: () => void) => void;
 }
 
 function fmt(sec: number) {
@@ -34,7 +36,7 @@ function fmt(sec: number) {
   return h > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
 }
 
-export function VideoPlayer({ source, onClose }: PlayerProps) {
+export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle }: PlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const hlsRef = useRef<Hls | null>(null);
@@ -156,6 +158,17 @@ export function VideoPlayer({ source, onClose }: PlayerProps) {
     else v.pause();
     showControls();
   };
+
+  // Notify parent of playing-state changes
+  useEffect(() => {
+    onPlayingChange?.(playing);
+  }, [playing, onPlayingChange]);
+
+  // Expose togglePlay to parent
+  useEffect(() => {
+    onRequestToggle?.(togglePlay);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onRequestToggle]);
 
   const seek = (delta: number) => {
     const v = videoRef.current;
