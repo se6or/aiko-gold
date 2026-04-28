@@ -141,8 +141,12 @@ export function VodSeriesTab({ kind }: Props) {
         )}
       </div>
 
-      {player && (
-        <VideoPlayer source={player} onClose={() => setPlayer(null)} />
+      {selected && (
+        <DetailsScreen
+          kind={kind}
+          item={selected}
+          onClose={() => setSelected(null)}
+        />
       )}
     </div>
   );
