@@ -1,7 +1,9 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import {
   ArrowLeft,
   Play,
+  Pause,
+  SkipForward,
   Star,
   Calendar,
   Clock,
@@ -87,6 +89,9 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
         : (item as SeriesItem).series_id;
     return storage.isFavorite(kind, id);
   });
+  const [quickMenuOpen, setQuickMenuOpen] = useState(false);
+  const longPressTimer = useRef<number | null>(null);
+  const longPressFired = useRef(false);
 
   const itemName = item.name;
   const itemCover =
@@ -180,6 +185,56 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
     if (first) playEpisode(first);
   };
 
+  const playNext = () => {
+    if (kind === "vod") {
+      playVod();
+      return;
+    }
+    if (!series || !activeSeason) return;
+    const eps = series.episodes[activeSeason] || [];
+    // For series we interpret "next" as the 2nd episode (next after first),
+    // or fall back to the first if only one exists.
+    const next = eps[1] || eps[0];
+    if (next) playEpisode(next);
+  };
+
+  const primaryPlay = () => (kind === "vod" ? playVod() : playFirstEpisode());
+
+  // Long-press handlers
+  const startLongPress = () => {
+    longPressFired.current = false;
+    if (longPressTimer.current) window.clearTimeout(longPressTimer.current);
+    longPressTimer.current = window.setTimeout(() => {
+      longPressFired.current = true;
+      // Haptic feedback on supported devices
+      if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+        try {
+          navigator.vibrate?.(15);
+        } catch {
+          /* noop */
+        }
+      }
+      setQuickMenuOpen(true);
+    }, 500);
+  };
+
+  const cancelLongPress = () => {
+    if (longPressTimer.current) {
+      window.clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handlePlayClick = (e: React.MouseEvent) => {
+    if (longPressFired.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      longPressFired.current = false;
+      return;
+    }
+    primaryPlay();
+  };
+
   const toggleFav = () => {
     const id =
       kind === "vod"
@@ -229,15 +284,84 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
         {/* Big play button floating */}
         {!loading && (
           <button
-            onClick={kind === "vod" ? playVod : playFirstEpisode}
+            onClick={handlePlayClick}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              setQuickMenuOpen(true);
+            }}
+            onTouchStart={startLongPress}
+            onTouchEnd={cancelLongPress}
+            onTouchMove={cancelLongPress}
+            onTouchCancel={cancelLongPress}
+            onPointerDown={(e) => {
+              if (e.pointerType === "mouse") startLongPress();
+            }}
+            onPointerUp={cancelLongPress}
+            onPointerLeave={cancelLongPress}
             aria-label={t("play")}
-            className="tap-target tap-target-lg absolute left-1/2 -translate-x-1/2 translate-y-1/2 bottom-0 z-30 grid place-items-center bg-transparent border-0 p-0 touch-manipulation"
+            aria-haspopup="menu"
+            aria-expanded={quickMenuOpen}
+            className="tap-target tap-target-lg absolute left-1/2 -translate-x-1/2 translate-y-1/2 bottom-0 z-30 grid place-items-center bg-transparent border-0 p-0 touch-manipulation select-none"
           >
-            {/* Visible button shape (unchanged across breakpoints) */}
             <span className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full gold-bg grid place-items-center text-black shadow-gold border-2 border-white/90 hover:scale-110 active:scale-95 transition">
-              <Play className="w-7 h-7 sm:w-9 sm:h-9 fill-black ms-1" />
+              <Play className="w-7 h-7 sm:w-9 sm:h-9 fill-black ms-1 pointer-events-none" />
             </span>
           </button>
+        )}
+
+        {quickMenuOpen && (
+          <div
+            className="fixed inset-0 z-[11500] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center animate-fade-in"
+            onClick={() => setQuickMenuOpen(false)}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div
+              className="w-full sm:w-80 rounded-t-2xl sm:rounded-2xl overflow-hidden bg-gradient-to-br from-bg-secondary to-black border border-gold-dark/60 shadow-gold animate-slide-up"
+              onClick={(e) => e.stopPropagation()}
+              role="menu"
+            >
+              <div className="px-5 py-3 text-center text-xs tracking-[0.3em] uppercase text-gold-dark border-b border-gold-dark/30">
+                {t("quickActions")}
+              </div>
+              <button
+                role="menuitem"
+                onClick={() => {
+                  setQuickMenuOpen(false);
+                  primaryPlay();
+                }}
+                className="w-full flex items-center gap-3 px-5 py-4 text-start text-gold font-bold hover:bg-gold-dark/15 transition border-b border-gold-dark/20"
+              >
+                <Play className="w-5 h-5 fill-gold" />
+                {t("play")}
+              </button>
+              <button
+                role="menuitem"
+                onClick={() => setQuickMenuOpen(false)}
+                className="w-full flex items-center gap-3 px-5 py-4 text-start text-gold font-bold hover:bg-gold-dark/15 transition border-b border-gold-dark/20"
+              >
+                <Pause className="w-5 h-5" />
+                {t("pause")}
+              </button>
+              <button
+                role="menuitem"
+                onClick={() => {
+                  setQuickMenuOpen(false);
+                  playNext();
+                }}
+                className="w-full flex items-center gap-3 px-5 py-4 text-start text-gold font-bold hover:bg-gold-dark/15 transition"
+              >
+                <SkipForward className="w-5 h-5" />
+                {t("next")}
+              </button>
+              <button
+                onClick={() => setQuickMenuOpen(false)}
+                className="w-full px-5 py-3 text-center text-sm text-muted-foreground hover:text-gold border-t border-gold-dark/30 transition"
+              >
+                {t("cancel")}
+              </button>
+            </div>
+          </div>
         )}
       </div>
 

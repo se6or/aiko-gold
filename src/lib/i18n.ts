@@ -63,6 +63,9 @@ export const translations = {
     year: "السنة",
     genre: "النوع",
     duration: "المدة",
+    pause: "إيقاف",
+    next: "التالي",
+    quickActions: "إجراءات سريعة",
   },
   en: {
     welcome: "Welcome to",
@@ -128,6 +131,9 @@ export const translations = {
     year: "Year",
     genre: "Genre",
     duration: "Duration",
+    pause: "Pause",
+    next: "Next",
+    quickActions: "Quick actions",
   },
 };
 
