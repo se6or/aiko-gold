@@ -131,6 +131,9 @@ export const translations = {
     year: "Year",
     genre: "Genre",
     duration: "Duration",
+    pause: "Pause",
+    next: "Next",
+    quickActions: "Quick actions",
   },
 };
 
