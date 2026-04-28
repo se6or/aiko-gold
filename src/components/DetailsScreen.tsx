@@ -219,6 +219,10 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
           /* noop */
         }
       }
+      // Visual pulse indicator so the user knows the long-press registered
+      setLongPressPulse(true);
+      window.setTimeout(() => setLongPressPulse(false), 650);
+      toast(t("quickActions"), { duration: 1200 });
       setQuickMenuOpen(true);
     }, 500);
   };
