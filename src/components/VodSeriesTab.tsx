@@ -5,11 +5,9 @@ import {
   VodStream,
   SeriesItem,
   Category,
-  buildVodStreamUrl,
-  buildSeriesStreamUrl,
 } from "@/lib/xtream";
 import { Play, Film, Tv2 } from "lucide-react";
-import { VideoPlayer, PlayerSource } from "@/components/VideoPlayer";
+import { DetailsScreen } from "@/components/DetailsScreen";
 import { toast } from "sonner";
 
 interface Props {
