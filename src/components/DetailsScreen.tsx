@@ -237,6 +237,16 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
     primaryPlay();
   };
 
+  // Centralized close: prevents any pending play from firing after dismiss.
+  const closeQuickMenu = () => {
+    setQuickMenuOpen(false);
+    cancelLongPress();
+    longPressFired.current = true; // swallow the next click on the play button
+    window.setTimeout(() => {
+      longPressFired.current = false;
+    }, 350);
+  };
+
   const toggleFav = () => {
     const id =
       kind === "vod"
@@ -288,7 +298,7 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
     switch (e.key) {
       case "Escape":
         e.preventDefault();
-        setQuickMenuOpen(false);
+        closeQuickMenu();
         break;
       case "ArrowDown": {
         e.preventDefault();
@@ -393,7 +403,8 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
         {quickMenuOpen && (
           <div
             className="fixed inset-0 z-[11500] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center animate-fade-in"
-            onClick={() => setQuickMenuOpen(false)}
+            onMouseDown={closeQuickMenu}
+            onTouchStart={closeQuickMenu}
             onKeyDown={handleMenuKeyDown}
             role="dialog"
             aria-modal="true"
@@ -402,6 +413,8 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
             <div
               ref={menuRef}
               className="w-full sm:w-80 rounded-t-2xl sm:rounded-2xl overflow-hidden bg-gradient-to-br from-bg-secondary to-black border border-gold-dark/60 shadow-gold animate-slide-up"
+              onMouseDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
               onClick={(e) => e.stopPropagation()}
               role="menu"
             >
@@ -411,7 +424,7 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
               <button
                 role="menuitem"
                 onClick={() => {
-                  setQuickMenuOpen(false);
+                  closeQuickMenu();
                   primaryPlay();
                 }}
                 className="w-full flex items-center gap-3 px-5 py-4 text-start text-gold font-bold hover:bg-gold-dark/15 focus-visible:bg-gold-dark/25 focus-visible:outline-none transition border-b border-gold-dark/20"
@@ -421,7 +434,7 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
               </button>
               <button
                 role="menuitem"
-                onClick={() => setQuickMenuOpen(false)}
+                onClick={closeQuickMenu}
                 className="w-full flex items-center gap-3 px-5 py-4 text-start text-gold font-bold hover:bg-gold-dark/15 focus-visible:bg-gold-dark/25 focus-visible:outline-none transition border-b border-gold-dark/20"
               >
                 <Pause className="w-5 h-5" />
@@ -430,7 +443,7 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
               <button
                 role="menuitem"
                 onClick={() => {
-                  setQuickMenuOpen(false);
+                  closeQuickMenu();
                   playNext();
                 }}
                 className="w-full flex items-center gap-3 px-5 py-4 text-start text-gold font-bold hover:bg-gold-dark/15 focus-visible:bg-gold-dark/25 focus-visible:outline-none transition"
@@ -440,7 +453,7 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
               </button>
               <button
                 data-menu-close
-                onClick={() => setQuickMenuOpen(false)}
+                onClick={closeQuickMenu}
                 className="w-full px-5 py-3 text-center text-sm text-muted-foreground hover:text-gold focus-visible:text-gold focus-visible:outline-none border-t border-gold-dark/30 transition"
               >
                 {t("cancel")}
