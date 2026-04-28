@@ -304,3 +304,81 @@
     height: 96px;
   }
 }
+
+/* ============================================
+   Quick-Actions Menu Items
+   High-contrast focus-visible for keyboard users,
+   especially noticeable on mobile where the gold
+   palette can wash out default ring styles.
+   ============================================ */
+.quick-menu-item {
+  position: relative;
+  outline: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.quick-menu-item:hover {
+  background-color: hsl(var(--gold-dark) / 0.15);
+}
+
+.quick-menu-item:focus-visible {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--gold-dark) / 0.35) 0%,
+    hsl(var(--gold-dark) / 0.15) 100%
+  );
+  color: #000;
+  box-shadow:
+    inset 0 0 0 2px hsl(var(--gold)),
+    0 0 0 3px hsl(var(--gold) / 0.35);
+  z-index: 1;
+}
+
+/* Leading highlight bar on the focused item (RTL-aware) */
+.quick-menu-item:focus-visible::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  inset-inline-start: 0;
+  width: 4px;
+  border-radius: 4px;
+  background: linear-gradient(
+    180deg,
+    hsl(var(--gold)) 0%,
+    hsl(var(--gold-dark)) 100%
+  );
+  box-shadow: 0 0 10px hsl(var(--gold) / 0.7);
+}
+
+.quick-menu-item:focus-visible svg {
+  color: #000;
+  filter: drop-shadow(0 0 4px hsl(var(--gold) / 0.8));
+}
+
+/* Cancel variant — subtler but still visible */
+.quick-menu-cancel:focus-visible {
+  color: hsl(var(--gold));
+  background-color: hsl(var(--gold-dark) / 0.2);
+  box-shadow:
+    inset 0 0 0 2px hsl(var(--gold)),
+    0 0 0 2px hsl(var(--gold) / 0.3);
+  outline: none;
+}
+
+/* On touch / coarse pointers, make the ring slightly thicker for visibility */
+@media (pointer: coarse) {
+  .quick-menu-item:focus-visible {
+    box-shadow:
+      inset 0 0 0 3px hsl(var(--gold)),
+      0 0 0 4px hsl(var(--gold) / 0.45);
+  }
+}
+
+/* Reduce motion friendliness */
+@media (prefers-reduced-motion: reduce) {
+  .quick-menu-item,
+  .quick-menu-cancel {
+    transition: none;
+  }
+}
