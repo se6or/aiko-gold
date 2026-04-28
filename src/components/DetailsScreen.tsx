@@ -1,7 +1,9 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import {
   ArrowLeft,
   Play,
+  Pause,
+  SkipForward,
   Star,
   Calendar,
   Clock,
