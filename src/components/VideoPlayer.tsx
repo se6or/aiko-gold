@@ -159,6 +159,17 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
     showControls();
   };
 
+  // Notify parent of playing-state changes
+  useEffect(() => {
+    onPlayingChange?.(playing);
+  }, [playing, onPlayingChange]);
+
+  // Expose togglePlay to parent
+  useEffect(() => {
+    onRequestToggle?.(togglePlay);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onRequestToggle]);
+
   const seek = (delta: number) => {
     const v = videoRef.current;
     if (!v || source.isLive) return;
