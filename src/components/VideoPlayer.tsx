@@ -23,6 +23,8 @@ export interface PlayerSource {
 interface PlayerProps {
   source: PlayerSource;
   onClose: () => void;
+  onPlayingChange?: (playing: boolean) => void;
+  onRequestToggle?: (toggle: () => void) => void;
 }
 
 function fmt(sec: number) {
