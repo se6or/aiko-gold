@@ -67,6 +67,7 @@ export const translations = {
     next: "التالي",
     quickActions: "إجراءات سريعة",
   },
+  en: {
     welcome: "Welcome to",
     appName: "AIKO GOLD Player",
     tagline: "Advanced live TV & VOD player",
