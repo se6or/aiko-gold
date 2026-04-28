@@ -248,6 +248,7 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
   const closeQuickMenu = () => {
     setQuickMenuOpen(false);
     cancelLongPress();
+    setLongPressPulse(false);
     longPressFired.current = true; // swallow the next click on the play button
     window.setTimeout(() => {
       longPressFired.current = false;
