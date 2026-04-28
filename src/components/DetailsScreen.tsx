@@ -230,16 +230,18 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
         {!loading && (
           <button
             onClick={kind === "vod" ? playVod : playFirstEpisode}
-            style={{ minWidth: 44, minHeight: 44 }}
-            className="absolute left-1/2 -translate-x-1/2 translate-y-1/2 bottom-0 w-16 h-16 sm:w-20 sm:h-20 rounded-full gold-bg grid place-items-center text-black shadow-gold border-2 border-white/90 hover:scale-110 active:scale-95 transition z-30 touch-manipulation p-3"
             aria-label={t("play")}
+            className="absolute left-1/2 -translate-x-1/2 translate-y-1/2 bottom-0 z-30 grid place-items-center bg-transparent border-0 p-0 touch-manipulation"
           >
-            {/* Invisible tap extender to guarantee ≥44px hit area on all densities */}
+            {/* Invisible extended tap target: larger on small screens */}
             <span
               aria-hidden
-              className="absolute inset-0 -m-2 rounded-full"
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[104px] h-[104px] sm:w-[92px] sm:h-[92px] rounded-full"
             />
-            <Play className="relative w-7 h-7 sm:w-9 sm:h-9 fill-black ms-1 pointer-events-none" />
+            {/* Visible button shape (unchanged) */}
+            <span className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full gold-bg grid place-items-center text-black shadow-gold border-2 border-white/90 hover:scale-110 active:scale-95 transition">
+              <Play className="w-7 h-7 sm:w-9 sm:h-9 fill-black ms-1" />
+            </span>
           </button>
         )}
       </div>
