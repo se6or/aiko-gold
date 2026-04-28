@@ -96,6 +96,7 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
   const longPressFired = useRef(false);
   const playBtnRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [longPressPulse, setLongPressPulse] = useState(false);
 
   const itemName = item.name;
   const itemCover =
@@ -218,6 +219,10 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
           /* noop */
         }
       }
+      // Visual pulse indicator so the user knows the long-press registered
+      setLongPressPulse(true);
+      window.setTimeout(() => setLongPressPulse(false), 650);
+      toast(t("quickActions"), { duration: 1200 });
       setQuickMenuOpen(true);
     }, 500);
   };
@@ -243,6 +248,7 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
   const closeQuickMenu = () => {
     setQuickMenuOpen(false);
     cancelLongPress();
+    setLongPressPulse(false);
     longPressFired.current = true; // swallow the next click on the play button
     window.setTimeout(() => {
       longPressFired.current = false;
@@ -397,7 +403,20 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
             className="tap-target tap-target-lg absolute left-1/2 -translate-x-1/2 translate-y-1/2 bottom-0 z-30 grid place-items-center bg-transparent border-0 p-0 touch-manipulation select-none focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/50 rounded-full"
           >
             <span className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full gold-bg grid place-items-center text-black shadow-gold border-2 border-white/90 hover:scale-110 active:scale-95 transition">
-              <Play className="w-7 h-7 sm:w-9 sm:h-9 fill-black ms-1 pointer-events-none" />
+              {/* Long-press recognition indicator */}
+              {longPressPulse && (
+                <>
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 rounded-full border-2 border-gold animate-long-press-ping pointer-events-none"
+                  />
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 rounded-full bg-gold/30 animate-long-press-flash pointer-events-none"
+                  />
+                </>
+              )}
+              <Play className="relative w-7 h-7 sm:w-9 sm:h-9 fill-black ms-1 pointer-events-none" />
             </span>
           </button>
         )}
