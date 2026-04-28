@@ -185,6 +185,56 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
     if (first) playEpisode(first);
   };
 
+  const playNext = () => {
+    if (kind === "vod") {
+      playVod();
+      return;
+    }
+    if (!series || !activeSeason) return;
+    const eps = series.episodes[activeSeason] || [];
+    // For series we interpret "next" as the 2nd episode (next after first),
+    // or fall back to the first if only one exists.
+    const next = eps[1] || eps[0];
+    if (next) playEpisode(next);
+  };
+
+  const primaryPlay = () => (kind === "vod" ? playVod() : playFirstEpisode());
+
+  // Long-press handlers
+  const startLongPress = () => {
+    longPressFired.current = false;
+    if (longPressTimer.current) window.clearTimeout(longPressTimer.current);
+    longPressTimer.current = window.setTimeout(() => {
+      longPressFired.current = true;
+      // Haptic feedback on supported devices
+      if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+        try {
+          navigator.vibrate?.(15);
+        } catch {
+          /* noop */
+        }
+      }
+      setQuickMenuOpen(true);
+    }, 500);
+  };
+
+  const cancelLongPress = () => {
+    if (longPressTimer.current) {
+      window.clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handlePlayClick = (e: React.MouseEvent) => {
+    if (longPressFired.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      longPressFired.current = false;
+      return;
+    }
+    primaryPlay();
+  };
+
   const toggleFav = () => {
     const id =
       kind === "vod"
