@@ -423,25 +423,32 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
               <div className="px-5 py-3 text-center text-xs tracking-[0.3em] uppercase text-gold-dark border-b border-gold-dark/30">
                 {t("quickActions")}
               </div>
-              <button
-                role="menuitem"
-                onClick={() => {
+              {(() => {
+                const hasPlayer = !!player;
+                // Dynamic: if a player is open and currently playing → show Pause
+                //          otherwise (no player, or paused) → show Play
+                const showPause = hasPlayer && isPlayingNow;
+                const label = showPause ? t("pause") : t("play");
+                const Icon = showPause ? Pause : Play;
+                const handler = () => {
                   closeQuickMenu();
-                  primaryPlay();
-                }}
-                className="w-full flex items-center gap-3 px-5 py-4 text-start text-gold font-bold hover:bg-gold-dark/15 focus-visible:bg-gold-dark/25 focus-visible:outline-none transition border-b border-gold-dark/20"
-              >
-                <Play className="w-5 h-5 fill-gold" />
-                {t("play")}
-              </button>
-              <button
-                role="menuitem"
-                onClick={closeQuickMenu}
-                className="w-full flex items-center gap-3 px-5 py-4 text-start text-gold font-bold hover:bg-gold-dark/15 focus-visible:bg-gold-dark/25 focus-visible:outline-none transition border-b border-gold-dark/20"
-              >
-                <Pause className="w-5 h-5" />
-                {t("pause")}
-              </button>
+                  if (hasPlayer && togglePlayRef.current) {
+                    togglePlayRef.current();
+                  } else {
+                    primaryPlay();
+                  }
+                };
+                return (
+                  <button
+                    role="menuitem"
+                    onClick={handler}
+                    className="w-full flex items-center gap-3 px-5 py-4 text-start text-gold font-bold hover:bg-gold-dark/15 focus-visible:bg-gold-dark/25 focus-visible:outline-none transition border-b border-gold-dark/20"
+                  >
+                    <Icon className={`w-5 h-5 ${showPause ? "" : "fill-gold"}`} />
+                    {label}
+                  </button>
+                );
+              })()}
               <button
                 role="menuitem"
                 onClick={() => {
