@@ -20,7 +20,7 @@ export function VodSeriesTab({ kind }: Props) {
   const [items, setItems] = useState<(VodStream | SeriesItem)[]>([]);
   const [activeCat, setActiveCat] = useState<string>("all");
   const [loading, setLoading] = useState(true);
-  const [player, setPlayer] = useState<PlayerSource | null>(null);
+  const [selected, setSelected] = useState<VodStream | SeriesItem | null>(null);
 
   useEffect(() => {
     if (!activeAccount) return;
@@ -54,51 +54,8 @@ export function VodSeriesTab({ kind }: Props) {
     return items.filter((x) => x.category_id === activeCat);
   }, [items, activeCat]);
 
-  const openItem = async (item: VodStream | SeriesItem) => {
-    if (!activeAccount) return;
-    if (kind === "vod") {
-      const vod = item as VodStream;
-      try {
-        const info = await xtream.getVodInfo(activeAccount, vod.stream_id);
-        const ext = info?.movie_data?.container_extension || "mp4";
-        setPlayer({
-          url: buildVodStreamUrl(activeAccount, vod.stream_id, ext),
-          title: vod.name,
-        });
-      } catch {
-        setPlayer({
-          url: buildVodStreamUrl(activeAccount, vod.stream_id),
-          title: vod.name,
-        });
-      }
-    } else {
-      const series = item as SeriesItem;
-      try {
-        const info = await xtream.getSeriesInfo(activeAccount, series.series_id);
-        // pick first episode
-        const seasons = Object.keys(info.episodes || {});
-        if (seasons.length === 0) {
-          toast.error("لا توجد حلقات متاحة");
-          return;
-        }
-        const firstSeason = info.episodes[seasons[0]];
-        const firstEp = firstSeason?.[0];
-        if (!firstEp) {
-          toast.error("لا توجد حلقات متاحة");
-          return;
-        }
-        setPlayer({
-          url: buildSeriesStreamUrl(
-            activeAccount,
-            firstEp.id,
-            firstEp.container_extension || "mp4"
-          ),
-          title: `${series.name} - ${firstEp.title}`,
-        });
-      } catch (e) {
-        toast.error((e as Error).message);
-      }
-    }
+  const openItem = (item: VodStream | SeriesItem) => {
+    setSelected(item);
   };
 
   const Icon = kind === "vod" ? Film : Tv2;
