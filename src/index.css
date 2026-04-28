@@ -234,3 +234,73 @@
 .animate-spin-gold {
   animation: spin-gold 1s linear infinite;
 }
+
+/* ============================================
+   Tap Target Utility
+   Guarantees adequate touch area while keeping
+   the visible button shape unchanged.
+   ============================================ */
+.tap-target {
+  position: relative;
+}
+.tap-target::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 56px;
+  height: 56px;
+  border-radius: 9999px;
+  pointer-events: auto;
+}
+
+/* Very small phones: 320px–360px */
+@media (max-width: 360px) {
+  .tap-target::before {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+/* Small phones: 361px–480px */
+@media (min-width: 361px) and (max-width: 480px) {
+  .tap-target::before {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+/* Tablets and up */
+@media (min-width: 768px) {
+  .tap-target::before {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+/* Coarse pointer (touch devices) — slightly larger for safety */
+@media (pointer: coarse) {
+  .tap-target::before {
+    width: max(52px, 100%);
+    height: max(52px, 100%);
+  }
+}
+
+/* Extra-large tap target variant for primary actions */
+.tap-target-lg::before {
+  width: 104px;
+  height: 104px;
+}
+@media (min-width: 640px) {
+  .tap-target-lg::before {
+    width: 96px;
+    height: 96px;
+  }
+}
+@media (max-width: 360px) {
+  .tap-target-lg::before {
+    width: 96px;
+    height: 96px;
+  }
+}
