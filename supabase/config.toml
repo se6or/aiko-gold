@@ -1,1 +1,4 @@
 project_id = "mzqegtwmevkdmnwuhhip"
+
+[functions.xtream-proxy]
+verify_jwt = false
