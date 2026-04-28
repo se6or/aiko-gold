@@ -237,6 +237,16 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
     primaryPlay();
   };
 
+  // Centralized close: prevents any pending play from firing after dismiss.
+  const closeQuickMenu = () => {
+    setQuickMenuOpen(false);
+    cancelLongPress();
+    longPressFired.current = true; // swallow the next click on the play button
+    window.setTimeout(() => {
+      longPressFired.current = false;
+    }, 350);
+  };
+
   const toggleFav = () => {
     const id =
       kind === "vod"
