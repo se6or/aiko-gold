@@ -298,7 +298,7 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
     switch (e.key) {
       case "Escape":
         e.preventDefault();
-        setQuickMenuOpen(false);
+        closeQuickMenu();
         break;
       case "ArrowDown": {
         e.preventDefault();
