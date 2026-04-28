@@ -363,7 +363,9 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
         {/* Big play button floating */}
         {!loading && (
           <button
+            ref={playBtnRef}
             onClick={handlePlayClick}
+            onKeyDown={handlePlayKeyDown}
             onContextMenu={(e) => {
               e.preventDefault();
               setQuickMenuOpen(true);
@@ -380,7 +382,7 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
             aria-label={t("play")}
             aria-haspopup="menu"
             aria-expanded={quickMenuOpen}
-            className="tap-target tap-target-lg absolute left-1/2 -translate-x-1/2 translate-y-1/2 bottom-0 z-30 grid place-items-center bg-transparent border-0 p-0 touch-manipulation select-none"
+            className="tap-target tap-target-lg absolute left-1/2 -translate-x-1/2 translate-y-1/2 bottom-0 z-30 grid place-items-center bg-transparent border-0 p-0 touch-manipulation select-none focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/50 rounded-full"
           >
             <span className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full gold-bg grid place-items-center text-black shadow-gold border-2 border-white/90 hover:scale-110 active:scale-95 transition">
               <Play className="w-7 h-7 sm:w-9 sm:h-9 fill-black ms-1 pointer-events-none" />
@@ -392,10 +394,13 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
           <div
             className="fixed inset-0 z-[11500] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center animate-fade-in"
             onClick={() => setQuickMenuOpen(false)}
+            onKeyDown={handleMenuKeyDown}
             role="dialog"
             aria-modal="true"
+            aria-label={t("quickActions")}
           >
             <div
+              ref={menuRef}
               className="w-full sm:w-80 rounded-t-2xl sm:rounded-2xl overflow-hidden bg-gradient-to-br from-bg-secondary to-black border border-gold-dark/60 shadow-gold animate-slide-up"
               onClick={(e) => e.stopPropagation()}
               role="menu"
@@ -409,7 +414,7 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
                   setQuickMenuOpen(false);
                   primaryPlay();
                 }}
-                className="w-full flex items-center gap-3 px-5 py-4 text-start text-gold font-bold hover:bg-gold-dark/15 transition border-b border-gold-dark/20"
+                className="w-full flex items-center gap-3 px-5 py-4 text-start text-gold font-bold hover:bg-gold-dark/15 focus-visible:bg-gold-dark/25 focus-visible:outline-none transition border-b border-gold-dark/20"
               >
                 <Play className="w-5 h-5 fill-gold" />
                 {t("play")}
@@ -417,7 +422,7 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
               <button
                 role="menuitem"
                 onClick={() => setQuickMenuOpen(false)}
-                className="w-full flex items-center gap-3 px-5 py-4 text-start text-gold font-bold hover:bg-gold-dark/15 transition border-b border-gold-dark/20"
+                className="w-full flex items-center gap-3 px-5 py-4 text-start text-gold font-bold hover:bg-gold-dark/15 focus-visible:bg-gold-dark/25 focus-visible:outline-none transition border-b border-gold-dark/20"
               >
                 <Pause className="w-5 h-5" />
                 {t("pause")}
@@ -428,14 +433,15 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
                   setQuickMenuOpen(false);
                   playNext();
                 }}
-                className="w-full flex items-center gap-3 px-5 py-4 text-start text-gold font-bold hover:bg-gold-dark/15 transition"
+                className="w-full flex items-center gap-3 px-5 py-4 text-start text-gold font-bold hover:bg-gold-dark/15 focus-visible:bg-gold-dark/25 focus-visible:outline-none transition"
               >
                 <SkipForward className="w-5 h-5" />
                 {t("next")}
               </button>
               <button
+                data-menu-close
                 onClick={() => setQuickMenuOpen(false)}
-                className="w-full px-5 py-3 text-center text-sm text-muted-foreground hover:text-gold border-t border-gold-dark/30 transition"
+                className="w-full px-5 py-3 text-center text-sm text-muted-foreground hover:text-gold focus-visible:text-gold focus-visible:outline-none border-t border-gold-dark/30 transition"
               >
                 {t("cancel")}
               </button>
