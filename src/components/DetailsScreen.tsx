@@ -96,6 +96,7 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
   const longPressFired = useRef(false);
   const playBtnRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [longPressPulse, setLongPressPulse] = useState(false);
 
   const itemName = item.name;
   const itemCover =
