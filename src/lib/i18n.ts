@@ -63,8 +63,10 @@ export const translations = {
     year: "السنة",
     genre: "النوع",
     duration: "المدة",
+    pause: "إيقاف",
+    next: "التالي",
+    quickActions: "إجراءات سريعة",
   },
-  en: {
     welcome: "Welcome to",
     appName: "AIKO GOLD Player",
     tagline: "Advanced live TV & VOD player",
