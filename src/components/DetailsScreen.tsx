@@ -405,9 +405,15 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
         {quickMenuOpen && (
           <div
             className="fixed inset-0 z-[11500] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center animate-fade-in"
-            onMouseDown={closeQuickMenu}
-            onTouchStart={closeQuickMenu}
+            onMouseDown={(e) => {
+              // Only close if the press started on the backdrop itself — not on the menu
+              if (e.target === e.currentTarget) closeQuickMenu();
+            }}
+            onTouchStart={(e) => {
+              if (e.target === e.currentTarget) closeQuickMenu();
+            }}
             onKeyDown={handleMenuKeyDown}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-label={t("quickActions")}
@@ -415,9 +421,6 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
             <div
               ref={menuRef}
               className="w-full sm:w-80 rounded-t-2xl sm:rounded-2xl overflow-hidden bg-gradient-to-br from-bg-secondary to-black border border-gold-dark/60 shadow-gold animate-slide-up"
-              onMouseDown={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
-              onClick={(e) => e.stopPropagation()}
               role="menu"
             >
               <div className="px-5 py-3 text-center text-xs tracking-[0.3em] uppercase text-gold-dark border-b border-gold-dark/30">
