@@ -90,6 +90,8 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
     return storage.isFavorite(kind, id);
   });
   const [quickMenuOpen, setQuickMenuOpen] = useState(false);
+  const [isPlayingNow, setIsPlayingNow] = useState(false);
+  const togglePlayRef = useRef<(() => void) | null>(null);
   const longPressTimer = useRef<number | null>(null);
   const longPressFired = useRef(false);
   const playBtnRef = useRef<HTMLButtonElement>(null);
