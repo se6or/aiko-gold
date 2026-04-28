@@ -230,10 +230,16 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
         {!loading && (
           <button
             onClick={kind === "vod" ? playVod : playFirstEpisode}
-            className="absolute left-1/2 -translate-x-1/2 translate-y-1/2 bottom-0 w-16 h-16 sm:w-20 sm:h-20 rounded-full gold-bg grid place-items-center text-black shadow-gold border-2 border-white/90 hover:scale-110 transition z-20"
+            style={{ minWidth: 44, minHeight: 44 }}
+            className="absolute left-1/2 -translate-x-1/2 translate-y-1/2 bottom-0 w-16 h-16 sm:w-20 sm:h-20 rounded-full gold-bg grid place-items-center text-black shadow-gold border-2 border-white/90 hover:scale-110 active:scale-95 transition z-30 touch-manipulation p-3"
             aria-label={t("play")}
           >
-            <Play className="w-7 h-7 sm:w-9 sm:h-9 fill-black ms-1" />
+            {/* Invisible tap extender to guarantee ≥44px hit area on all densities */}
+            <span
+              aria-hidden
+              className="absolute inset-0 -m-2 rounded-full"
+            />
+            <Play className="relative w-7 h-7 sm:w-9 sm:h-9 fill-black ms-1 pointer-events-none" />
           </button>
         )}
       </div>
