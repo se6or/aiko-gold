@@ -78,7 +78,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           createdAt: Date.now(),
         };
         const res = await xtream.authenticate(newAcc);
-        if (!res?.user_info || res.user_info.auth === 0) {
+        const info = res?.user_info as (XtreamUserInfo & { auth?: number }) | undefined;
+        if (!info || info.auth === 0 || !info.username) {
           throw new Error("Authentication failed");
         }
         const all = [...storage.getAccounts().filter(
