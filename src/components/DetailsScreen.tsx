@@ -230,10 +230,10 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
         {!loading && (
           <button
             onClick={kind === "vod" ? playVod : playFirstEpisode}
-            className="absolute bottom-20 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full gold-bg grid place-items-center text-black shadow-gold border-2 border-white/90 hover:scale-110 transition z-10"
+            className="absolute left-1/2 -translate-x-1/2 translate-y-1/2 bottom-0 w-16 h-16 sm:w-20 sm:h-20 rounded-full gold-bg grid place-items-center text-black shadow-gold border-2 border-white/90 hover:scale-110 transition z-20"
             aria-label={t("play")}
           >
-            <Play className="w-9 h-9 fill-black ms-1" />
+            <Play className="w-7 h-7 sm:w-9 sm:h-9 fill-black ms-1" />
           </button>
         )}
       </div>
