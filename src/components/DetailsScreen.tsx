@@ -89,6 +89,9 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
         : (item as SeriesItem).series_id;
     return storage.isFavorite(kind, id);
   });
+  const [quickMenuOpen, setQuickMenuOpen] = useState(false);
+  const longPressTimer = useRef<number | null>(null);
+  const longPressFired = useRef(false);
 
   const itemName = item.name;
   const itemCover =
