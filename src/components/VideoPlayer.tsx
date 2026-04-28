@@ -36,7 +36,7 @@ function fmt(sec: number) {
   return h > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
 }
 
-export function VideoPlayer({ source, onClose }: PlayerProps) {
+export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle }: PlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const hlsRef = useRef<Hls | null>(null);
