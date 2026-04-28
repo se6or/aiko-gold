@@ -217,7 +217,7 @@ export function VideoPlayer({ source, onClose }: PlayerProps) {
       {(buffering || error) && (
         <div className="absolute inset-0 grid place-items-center pointer-events-none z-20">
           {error ? (
-            <div className="text-destructive bg-black/80 px-4 py-3 rounded-xl">
+            <div className="gold-text font-bold bg-black/80 border border-gold-dark/60 shadow-gold px-5 py-3 rounded-xl">
               {error}
             </div>
           ) : (
