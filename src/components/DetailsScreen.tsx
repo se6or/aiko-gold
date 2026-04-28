@@ -664,7 +664,18 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
       </div>
 
       {player && (
-        <VideoPlayer source={player} onClose={() => setPlayer(null)} />
+        <VideoPlayer
+          source={player}
+          onClose={() => {
+            setPlayer(null);
+            setIsPlayingNow(false);
+            togglePlayRef.current = null;
+          }}
+          onPlayingChange={setIsPlayingNow}
+          onRequestToggle={(fn) => {
+            togglePlayRef.current = fn;
+          }}
+        />
       )}
     </div>
   );
