@@ -445,7 +445,7 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
                   <button
                     role="menuitem"
                     onClick={handler}
-                    className="w-full flex items-center gap-3 px-5 py-4 text-start text-gold font-bold hover:bg-gold-dark/15 focus-visible:bg-gold-dark/25 focus-visible:outline-none transition border-b border-gold-dark/20"
+                    className="quick-menu-item w-full flex items-center gap-3 px-5 py-4 text-start text-gold font-bold border-b border-gold-dark/20"
                   >
                     <Icon className={`w-5 h-5 ${showPause ? "" : "fill-gold"}`} />
                     {label}
@@ -458,7 +458,7 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
                   closeQuickMenu();
                   playNext();
                 }}
-                className="w-full flex items-center gap-3 px-5 py-4 text-start text-gold font-bold hover:bg-gold-dark/15 focus-visible:bg-gold-dark/25 focus-visible:outline-none transition"
+                className="quick-menu-item w-full flex items-center gap-3 px-5 py-4 text-start text-gold font-bold"
               >
                 <SkipForward className="w-5 h-5" />
                 {t("next")}
@@ -466,7 +466,7 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
               <button
                 data-menu-close
                 onClick={closeQuickMenu}
-                className="w-full px-5 py-3 text-center text-sm text-muted-foreground hover:text-gold focus-visible:text-gold focus-visible:outline-none border-t border-gold-dark/30 transition"
+                className="quick-menu-cancel w-full px-5 py-3 text-center text-sm text-muted-foreground hover:text-gold border-t border-gold-dark/30 transition"
               >
                 {t("cancel")}
               </button>
