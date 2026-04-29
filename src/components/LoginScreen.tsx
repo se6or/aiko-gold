@@ -193,17 +193,18 @@ export function LoginScreen() {
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-5 w-full flex items-center justify-center gap-2 py-3 rounded-lg gold-bg text-black font-bold text-base hover:opacity-95 active:scale-[0.98] transition disabled:opacity-50"
+                className="mt-5 w-full flex items-center justify-center gap-2 py-3 rounded-lg gold-bg text-black font-extrabold text-base tracking-[0.25em] uppercase shadow-gold hover:opacity-95 active:scale-[0.98] transition disabled:opacity-50"
               >
                 {loading ? (
                   <>
                     <span className="w-4 h-4 rounded-full border-2 border-black/30 border-t-black animate-spin-gold" />
-                    {t("connecting")}
+                    <span className="tracking-[0.25em]">{t("connecting")}</span>
                   </>
                 ) : (
                   <>
                     <LogIn className="w-4 h-4" />
-                    {t("login")}
+                    <span>Enter</span>
+                    <span className="font-black tracking-[0.3em] text-black/90">AIKO GOLD</span>
                   </>
                 )}
               </button>
