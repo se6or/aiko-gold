@@ -204,7 +204,7 @@ export function LoginScreen() {
                   <>
                     <LogIn className="w-4 h-4" />
                     <span>Enter</span>
-                    <span className="gold-text-dark font-black tracking-[0.3em]">AIKO GOLD</span>
+                    <span className="font-black tracking-[0.3em] text-black/90">AIKO GOLD</span>
                   </>
                 )}
               </button>
