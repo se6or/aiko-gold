@@ -11,20 +11,8 @@ function Inner() {
   const [splash, setSplash] = useState(true);
 
   useEffect(() => {
-    let cancelled = false;
-    const minDelay = new Promise<void>((r) => setTimeout(r, 900));
-    const preload = (src: string) =>
-      new Promise<void>((resolve) => {
-        const img = new Image();
-        img.onload = img.onerror = () => resolve();
-        img.src = src;
-      });
-    Promise.all([minDelay, preload(logoUrl), preload(wordmarkUrl)]).then(() => {
-      if (!cancelled) setSplash(false);
-    });
-    return () => {
-      cancelled = true;
-    };
+    const id = setTimeout(() => setSplash(false), 600);
+    return () => clearTimeout(id);
   }, []);
 
   if (splash) return <Splash />;
