@@ -68,8 +68,12 @@ export function LoginScreen() {
           height={96}
           className="w-24 h-24 drop-shadow-[0_0_20px_hsl(var(--gold-dark)/0.6)]"
         />
-        <img src={wordmark} alt="AIKO GOLD" className="mt-3 h-7 w-auto" />
-        <p className="text-xs text-muted-foreground mt-1">{t("tagline")}</p>
+        <img
+          src={wordmark}
+          alt="AIKO GOLD"
+          className="mt-4 h-12 sm:h-14 w-auto max-w-[70vw] object-contain drop-shadow-[0_4px_18px_hsl(var(--gold-dark)/0.5)]"
+        />
+        <p className="text-[11px] tracking-[0.4em] uppercase text-gold-dark/80 mt-2">{t("tagline")}</p>
 
         <div className="w-full max-w-md mt-8">
           {mode === "list" && accounts.length > 0 ? (
