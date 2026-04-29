@@ -3,6 +3,7 @@ import { Eye, EyeOff, LogIn, Plus, Play, Trash2, Languages } from "lucide-react"
 import { useApp } from "@/context/AppContext";
 import { toast } from "sonner";
 import logo from "@/assets/aiko-logo.png";
+import wordmark from "@/assets/aiko-gold-wordmark.png";
 
 export function LoginScreen() {
   const {
@@ -67,7 +68,7 @@ export function LoginScreen() {
           height={96}
           className="w-24 h-24 drop-shadow-[0_0_20px_hsl(var(--gold-dark)/0.6)]"
         />
-        <h1 className="mt-3 text-2xl gold-text">AIKO GOLD</h1>
+        <img src={wordmark} alt="AIKO GOLD" className="mt-3 h-7 w-auto" />
         <p className="text-xs text-muted-foreground mt-1">{t("tagline")}</p>
 
         <div className="w-full max-w-md mt-8">
