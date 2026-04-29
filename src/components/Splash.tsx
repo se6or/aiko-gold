@@ -1,4 +1,5 @@
 import logo from "@/assets/aiko-logo.png";
+import wordmark from "@/assets/aiko-gold-wordmark.png";
 
 export function Splash() {
   return (
@@ -11,8 +12,12 @@ export function Splash() {
           height={160}
           className="w-40 h-40 animate-float drop-shadow-[0_0_30px_hsl(var(--gold-dark)/0.8)]"
         />
-        <h1 className="mt-2 text-3xl gold-text tracking-wider">AIKO GOLD</h1>
-        <p className="mt-1 text-xs tracking-[0.3em] text-gold-dark uppercase">
+        <img
+          src={wordmark}
+          alt="AIKO GOLD"
+          className="mt-3 h-10 w-auto drop-shadow-[0_0_20px_hsl(var(--gold-dark)/0.6)]"
+        />
+        <p className="mt-2 text-xs tracking-[0.3em] text-gold-dark uppercase">
           Premium Player
         </p>
         <div className="mt-8 w-12 h-12 rounded-full border-[3px] border-gold-dark/30 border-t-gold animate-spin-gold shadow-gold" />
