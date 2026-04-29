@@ -133,7 +133,10 @@ export function LoginScreen() {
             </div>
           ) : (
             <form
-              onSubmit={handleSubmit}
+              onSubmit={(e) => {
+                handleSubmit(e);
+                (document.activeElement as HTMLElement | null)?.blur();
+              }}
               className="bg-card/80 border border-gold-dark/40 rounded-2xl p-6 animate-fade-in"
             >
               <h2 className="text-xl font-bold text-gold text-center mb-5">
@@ -141,46 +144,68 @@ export function LoginScreen() {
               </h2>
               <div className="space-y-3">
                 <input
-                  className="w-full px-4 py-3 rounded-lg bg-input border border-gold-dark/40 focus:border-gold focus:outline-none text-center"
+                  className="w-full px-4 py-3 text-base rounded-lg bg-input border border-gold-dark/40 focus:border-gold focus:outline-none text-center"
                   placeholder={t("name")}
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  onFocus={(e) => e.currentTarget.scrollIntoView({ block: "center", behavior: "smooth" })}
+                  enterKeyHint="next"
+                  autoCapitalize="words"
+                  autoComplete="nickname"
                 />
                 <input
-                  className="w-full px-4 py-3 rounded-lg bg-input border border-gold-dark/40 focus:border-gold focus:outline-none text-center"
+                  className="w-full px-4 py-3 text-base rounded-lg bg-input border border-gold-dark/40 focus:border-gold focus:outline-none text-center"
                   placeholder={`${t("server")} (http://example.com:8080)`}
                   value={form.server}
                   onChange={(e) => setForm({ ...form, server: e.target.value })}
+                  onFocus={(e) => e.currentTarget.scrollIntoView({ block: "center", behavior: "smooth" })}
+                  type="url"
+                  inputMode="url"
+                  enterKeyHint="next"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
                   autoComplete="url"
                   required
                   dir="ltr"
                 />
                 <input
-                  className="w-full px-4 py-3 rounded-lg bg-input border border-gold-dark/40 focus:border-gold focus:outline-none text-center"
+                  className="w-full px-4 py-3 text-base rounded-lg bg-input border border-gold-dark/40 focus:border-gold focus:outline-none text-center"
                   placeholder={t("username")}
                   value={form.username}
                   onChange={(e) =>
                     setForm({ ...form, username: e.target.value })
                   }
+                  onFocus={(e) => e.currentTarget.scrollIntoView({ block: "center", behavior: "smooth" })}
+                  enterKeyHint="next"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
                   autoComplete="username"
                   required
                   dir="ltr"
                 />
                 <div className="relative">
                   <input
-                    className="w-full px-4 py-3 rounded-lg bg-input border border-gold-dark/40 focus:border-gold focus:outline-none text-center"
+                    className="w-full px-4 py-3 text-base rounded-lg bg-input border border-gold-dark/40 focus:border-gold focus:outline-none text-center pe-10"
                     type={showPw ? "text" : "password"}
                     placeholder={t("password")}
                     value={form.password}
                     onChange={(e) =>
                       setForm({ ...form, password: e.target.value })
                     }
+                    onFocus={(e) => e.currentTarget.scrollIntoView({ block: "center", behavior: "smooth" })}
+                    enterKeyHint="go"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
                     autoComplete="current-password"
                     required
                     dir="ltr"
                   />
                   <button
                     type="button"
+                    tabIndex={-1}
                     onClick={() => setShowPw((s) => !s)}
                     className="absolute top-1/2 -translate-y-1/2 end-3 text-muted-foreground hover:text-gold"
                     aria-label="toggle password"
