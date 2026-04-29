@@ -10,11 +10,17 @@ export function Splash() {
           alt="AIKO GOLD"
           width={160}
           height={160}
+          fetchPriority="high"
+          decoding="sync"
+          loading="eager"
           className="w-36 h-36 animate-float drop-shadow-[0_0_30px_hsl(var(--gold-dark)/0.8)]"
         />
         <img
           src={wordmark}
           alt="AIKO GOLD"
+          fetchPriority="high"
+          decoding="sync"
+          loading="eager"
           className="mt-5 h-16 sm:h-20 w-auto max-w-[78vw] object-contain drop-shadow-[0_4px_24px_hsl(var(--gold-dark)/0.55)]"
         />
         <p className="mt-3 text-[11px] tracking-[0.5em] text-gold-dark/90 uppercase">
