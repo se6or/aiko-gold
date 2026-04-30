@@ -196,6 +196,12 @@
   }
 }
 
+@keyframes gold-bars {
+  0%, 100% { height: 6px; }
+  30% { height: 22px; }
+  60% { height: 10px; }
+}
+
 @keyframes float-logo {
   0%,
   100% {
