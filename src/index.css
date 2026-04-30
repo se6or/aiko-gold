@@ -263,6 +263,9 @@
 .animate-spin-gold {
   animation: spin-gold 1s linear infinite;
 }
+.animate-gold-bars {
+  animation: gold-bars 0.9s ease-in-out infinite;
+}
 
 /* ============================================
    Tap Target Utility
