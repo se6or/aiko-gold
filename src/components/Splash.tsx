@@ -1,5 +1,5 @@
-import logo from "@/assets/aiko-logo.png";
-import wordmark from "@/assets/aiko-gold-wordmark.png";
+import logo from "@/assets/aiko-logo.webp";
+import wordmark from "@/assets/aiko-gold-wordmark.webp";
 
 export function Splash() {
   return (
