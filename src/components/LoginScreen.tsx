@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Eye, EyeOff, LogIn, Plus, Play, Trash2, Languages } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { toast } from "sonner";
-import logo from "@/assets/aiko-logo.png";
-import wordmark from "@/assets/aiko-gold-wordmark.png";
+import logo from "@/assets/aiko-logo.webp";
+import wordmark from "@/assets/aiko-gold-wordmark.webp";
 
 export function LoginScreen() {
   const {

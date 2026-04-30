@@ -3,8 +3,8 @@ import { AppProvider, useApp } from "@/context/AppContext";
 import { Splash } from "@/components/Splash";
 import { LoginScreen } from "@/components/LoginScreen";
 import { AppShell } from "@/components/AppShell";
-import logoUrl from "@/assets/aiko-logo.png";
-import wordmarkUrl from "@/assets/aiko-gold-wordmark.png";
+import logoUrl from "@/assets/aiko-logo.webp";
+import wordmarkUrl from "@/assets/aiko-gold-wordmark.webp";
 
 /** Preload an image — resolves as soon as it's decoded & cached */
 const preloadImg = (src: string) =>
