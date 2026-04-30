@@ -24,17 +24,19 @@ export function Splash() {
           className="mt-6 h-16 sm:h-20 w-auto max-w-[78vw] object-contain drop-shadow-[0_4px_24px_hsl(var(--gold-dark)/0.55)]"
         />
 
-        {/* Loader: dual gold arc, smooth & professional */}
-        <div className="relative mt-10 w-12 h-12" role="status" aria-label="loading">
-          <span className="absolute inset-0 rounded-full border-[2px] border-gold-dark/15" />
-          <span
-            className="absolute inset-0 rounded-full border-[2px] border-transparent animate-spin-gold"
-            style={{
-              borderTopColor: "hsl(var(--gold))",
-              borderRightColor: "hsl(var(--gold-dark) / 0.6)",
-              filter: "drop-shadow(0 0 6px hsl(var(--gold-dark) / 0.45))",
-            }}
-          />
+        {/* Loader: gold bars */}
+        <div className="flex items-end gap-[3px] mt-10 h-7" role="status" aria-label="loading">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <span
+              key={i}
+              className="w-[4px] rounded-sm animate-gold-bars"
+              style={{
+                background: "linear-gradient(to top, hsl(var(--gold-dark)), hsl(var(--gold)))",
+                animationDelay: `${i * 0.12}s`,
+                filter: "drop-shadow(0 0 4px hsl(var(--gold) / 0.5))",
+              }}
+            />
+          ))}
         </div>
       </div>
     </div>
