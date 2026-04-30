@@ -66,20 +66,44 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
     if (isHls && Hls.isSupported()) {
       const hls = new Hls({
         enableWorker: true,
-        lowLatencyMode: source.isLive,
-        maxBufferLength: 10,
-        maxMaxBufferLength: 30,
+        lowLatencyMode: true,
+        startPosition: source.isLive ? -1 : 0,
+        // Aggressive buffer settings for fast start
+        maxBufferLength: source.isLive ? 5 : 15,
+        maxMaxBufferLength: source.isLive ? 10 : 30,
+        maxBufferSize: 30 * 1000 * 1000,
+        maxBufferHole: 0.3,
+        // Fast ABR startup
+        abrEwmaDefaultEstimate: 1_000_000,
+        abrEwmaDefaultEstimateMax: 5_000_000,
+        startFragPrefetch: true,
+        // Faster manifest & fragment loading
+        manifestLoadingTimeOut: 8000,
+        manifestLoadingMaxRetry: 3,
+        levelLoadingTimeOut: 8000,
+        fragLoadingTimeOut: 15000,
+        // Back-buffer cleanup
+        backBufferLength: source.isLive ? 5 : 30,
+        // Live-specific
+        liveSyncDurationCount: source.isLive ? 2 : 3,
+        liveMaxLatencyDurationCount: source.isLive ? 4 : Infinity,
+        liveDurationInfinity: !!source.isLive,
       });
       hlsRef.current = hls;
       hls.loadSource(source.url);
       hls.attachMedia(video);
-      // Play immediately once manifest is parsed — no waiting
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         video.play().catch(() => {});
       });
       hls.on(Hls.Events.ERROR, (_, data) => {
         if (data.fatal) {
-          setError("فشل تحميل البث");
+          if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+            hls.startLoad();
+          } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+            hls.recoverMediaError();
+          } else {
+            setError("فشل تحميل البث");
+          }
         }
       });
     } else if (video.canPlayType("application/vnd.apple.mpegurl") && isHls) {
