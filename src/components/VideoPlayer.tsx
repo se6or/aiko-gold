@@ -52,7 +52,7 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
   const [fullscreen, setFullscreen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load source
+  // Load source — start playback as soon as media is ready
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -67,20 +67,29 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
       const hls = new Hls({
         enableWorker: true,
         lowLatencyMode: source.isLive,
+        maxBufferLength: 10,
+        maxMaxBufferLength: 30,
       });
       hlsRef.current = hls;
       hls.loadSource(source.url);
       hls.attachMedia(video);
+      // Play immediately once manifest is parsed — no waiting
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        video.play().catch(() => {});
+      });
       hls.on(Hls.Events.ERROR, (_, data) => {
         if (data.fatal) {
           setError("فشل تحميل البث");
         }
       });
+    } else if (video.canPlayType("application/vnd.apple.mpegurl") && isHls) {
+      // Native HLS (Safari)
+      video.src = source.url;
+      video.addEventListener("loadedmetadata", () => video.play().catch(() => {}), { once: true });
     } else {
       video.src = source.url;
+      video.addEventListener("canplay", () => video.play().catch(() => {}), { once: true });
     }
-
-    video.play().catch(() => {});
 
     return () => {
       hlsRef.current?.destroy();
