@@ -6,13 +6,24 @@ import { AppShell } from "@/components/AppShell";
 import logoUrl from "@/assets/aiko-logo.png";
 import wordmarkUrl from "@/assets/aiko-gold-wordmark.png";
 
+/** Preload an image — resolves as soon as it's decoded & cached */
+const preloadImg = (src: string) =>
+  new Promise<void>((resolve) => {
+    const img = new Image();
+    img.onload = img.onerror = () => resolve();
+    img.src = src;
+  });
+
 function Inner() {
   const { activeAccount } = useApp();
   const [splash, setSplash] = useState(true);
 
   useEffect(() => {
-    const id = setTimeout(() => setSplash(false), 600);
-    return () => clearTimeout(id);
+    // Wait for both: minimum visual time + assets fully decoded
+    const minDelay = new Promise<void>((r) => setTimeout(r, 600));
+    Promise.all([minDelay, preloadImg(logoUrl), preloadImg(wordmarkUrl)]).then(
+      () => setSplash(false)
+    );
   }, []);
 
   if (splash) return <Splash />;
