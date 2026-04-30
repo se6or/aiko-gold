@@ -12,6 +12,7 @@ import {
   Minimize,
   Settings,
   Loader2,
+  ChevronUp,
 } from "lucide-react";
 
 export interface PlayerSource {
@@ -27,6 +28,12 @@ interface PlayerProps {
   onRequestToggle?: (toggle: () => void) => void;
 }
 
+interface QualityLevel {
+  index: number;
+  height: number;
+  label: string;
+}
+
 function fmt(sec: number) {
   if (!isFinite(sec) || sec < 0) return "00:00";
   const s = Math.floor(sec % 60);
@@ -34,6 +41,16 @@ function fmt(sec: number) {
   const h = Math.floor(sec / 3600);
   const pad = (n: number) => n.toString().padStart(2, "0");
   return h > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
+}
+
+function resLabel(h: number) {
+  if (h >= 2160) return "4K";
+  if (h >= 1440) return "1440p";
+  if (h >= 1080) return "1080p";
+  if (h >= 720) return "720p";
+  if (h >= 480) return "480p";
+  if (h >= 360) return "360p";
+  return `${h}p`;
 }
 
 export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle }: PlayerProps) {
@@ -52,12 +69,20 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
   const [fullscreen, setFullscreen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Quality state
+  const [qualities, setQualities] = useState<QualityLevel[]>([]);
+  const [activeQuality, setActiveQuality] = useState(-1); // -1 = Auto
+  const [showQualityMenu, setShowQualityMenu] = useState(false);
+
   // Load source — start playback as soon as media is ready
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
     setError(null);
     setBuffering(true);
+    setQualities([]);
+    setActiveQuality(-1);
+    setShowQualityMenu(false);
 
     const isHls =
       source.url.includes(".m3u8") ||
@@ -68,23 +93,18 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
         enableWorker: true,
         lowLatencyMode: true,
         startPosition: source.isLive ? -1 : 0,
-        // Aggressive buffer settings for fast start
         maxBufferLength: source.isLive ? 5 : 15,
         maxMaxBufferLength: source.isLive ? 10 : 30,
         maxBufferSize: 30 * 1000 * 1000,
         maxBufferHole: 0.3,
-        // Fast ABR startup
         abrEwmaDefaultEstimate: 1_000_000,
         abrEwmaDefaultEstimateMax: 5_000_000,
         startFragPrefetch: true,
-        // Faster manifest & fragment loading
         manifestLoadingTimeOut: 8000,
         manifestLoadingMaxRetry: 3,
         levelLoadingTimeOut: 8000,
         fragLoadingTimeOut: 15000,
-        // Back-buffer cleanup
         backBufferLength: source.isLive ? 5 : 30,
-        // Live-specific
         liveSyncDurationCount: source.isLive ? 2 : 3,
         liveMaxLatencyDurationCount: source.isLive ? 4 : Infinity,
         liveDurationInfinity: !!source.isLive,
@@ -92,9 +112,28 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
       hlsRef.current = hls;
       hls.loadSource(source.url);
       hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+
+      hls.on(Hls.Events.MANIFEST_PARSED, (_e, data) => {
         video.play().catch(() => {});
+        // Build quality levels list
+        const levels: QualityLevel[] = data.levels.map((lvl, i) => ({
+          index: i,
+          height: lvl.height,
+          label: resLabel(lvl.height),
+        }));
+        // Sort highest first
+        levels.sort((a, b) => b.height - a.height);
+        setQualities(levels);
       });
+
+      hls.on(Hls.Events.LEVEL_SWITCHED, (_e, data) => {
+        if (hls.autoLevelEnabled) {
+          setActiveQuality(-1);
+        } else {
+          setActiveQuality(data.level);
+        }
+      });
+
       hls.on(Hls.Events.ERROR, (_, data) => {
         if (data.fatal) {
           if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
@@ -107,7 +146,6 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
         }
       });
     } else if (video.canPlayType("application/vnd.apple.mpegurl") && isHls) {
-      // Native HLS (Safari)
       video.src = source.url;
       video.addEventListener("loadedmetadata", () => video.play().catch(() => {}), { once: true });
     } else {
@@ -120,6 +158,35 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
       hlsRef.current = null;
     };
   }, [source.url, source.isLive]);
+
+  const setQuality = useCallback((levelIndex: number) => {
+    const hls = hlsRef.current;
+    if (!hls) return;
+    if (levelIndex === -1) {
+      hls.currentLevel = -1; // Auto
+      setActiveQuality(-1);
+    } else {
+      hls.currentLevel = levelIndex;
+      setActiveQuality(levelIndex);
+    }
+    setShowQualityMenu(false);
+    showControls();
+  }, []);
+
+  // Current quality label for the badge
+  const currentQualityLabel = useCallback(() => {
+    const hls = hlsRef.current;
+    if (!hls) return "";
+    if (activeQuality === -1) {
+      const cur = hls.currentLevel;
+      if (cur >= 0 && hls.levels[cur]) {
+        return `Auto (${resLabel(hls.levels[cur].height)})`;
+      }
+      return "Auto";
+    }
+    const lvl = hls.levels[activeQuality];
+    return lvl ? resLabel(lvl.height) : "";
+  }, [activeQuality]);
 
   // Events
   useEffect(() => {
@@ -169,6 +236,7 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
     if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
     hideTimerRef.current = window.setTimeout(() => {
       setControlsVisible(false);
+      setShowQualityMenu(false);
     }, 3500);
   }, []);
 
@@ -192,12 +260,10 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
     showControls();
   };
 
-  // Notify parent of playing-state changes
   useEffect(() => {
     onPlayingChange?.(playing);
   }, [playing, onPlayingChange]);
 
-  // Expose togglePlay to parent
   useEffect(() => {
     onRequestToggle?.(togglePlay);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -254,7 +320,14 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
       {/* Center tap overlay */}
       <button
         type="button"
-        onClick={togglePlay}
+        onClick={(e) => {
+          if (showQualityMenu) {
+            setShowQualityMenu(false);
+            e.stopPropagation();
+            return;
+          }
+          togglePlay();
+        }}
         onDoubleClick={toggleFullscreen}
         className="absolute inset-0 z-10"
         aria-label="play/pause"
@@ -295,6 +368,49 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
           </div>
         )}
       </div>
+
+      {/* Quality menu popup */}
+      {showQualityMenu && qualities.length > 0 && (
+        <div
+          className="absolute bottom-24 right-3 z-40 glass-dark border border-gold-dark/40 rounded-xl overflow-hidden animate-slide-up min-w-[140px]"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="px-3 py-2 text-[11px] font-bold text-gold/60 uppercase tracking-wider border-b border-gold-dark/20">
+            الجودة
+          </div>
+          {/* Auto option */}
+          <button
+            onClick={() => setQuality(-1)}
+            className={`w-full flex items-center justify-between px-3 py-2.5 text-sm transition hover:bg-gold-dark/15 ${
+              activeQuality === -1
+                ? "text-gold font-bold"
+                : "text-white/80"
+            }`}
+          >
+            <span>تلقائي</span>
+            {activeQuality === -1 && (
+              <span className="w-2 h-2 rounded-full bg-gold shadow-[0_0_6px_hsl(var(--gold)/0.8)]" />
+            )}
+          </button>
+          {/* Quality levels */}
+          {qualities.map((q) => (
+            <button
+              key={q.index}
+              onClick={() => setQuality(q.index)}
+              className={`w-full flex items-center justify-between px-3 py-2.5 text-sm transition hover:bg-gold-dark/15 ${
+                activeQuality === q.index
+                  ? "text-gold font-bold"
+                  : "text-white/80"
+              }`}
+            >
+              <span>{q.label}</span>
+              {activeQuality === q.index && (
+                <span className="w-2 h-2 rounded-full bg-gold shadow-[0_0_6px_hsl(var(--gold)/0.8)]" />
+              )}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Bottom controls */}
       <div
@@ -387,13 +503,30 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
                 <Maximize className="w-5 h-5" />
               )}
             </button>
-            <button
-              className="w-10 h-10 grid place-items-center text-gold/70"
-              aria-label="settings"
-              disabled
-            >
-              <Settings className="w-5 h-5" />
-            </button>
+            {/* Quality button — only show when HLS levels are available */}
+            {qualities.length > 0 ? (
+              <button
+                onClick={() => {
+                  setShowQualityMenu((v) => !v);
+                  showControls();
+                }}
+                className="relative h-10 px-2.5 grid place-items-center text-gold hover:text-white"
+                aria-label="quality"
+              >
+                <Settings className="w-5 h-5" />
+                <span className="absolute -top-0.5 -right-0.5 text-[9px] font-bold leading-none bg-gold text-black rounded px-1 py-[1px]">
+                  {activeQuality === -1 ? "A" : resLabel(qualities.find((q) => q.index === activeQuality)?.height ?? 0)}
+                </span>
+              </button>
+            ) : (
+              <button
+                className="w-10 h-10 grid place-items-center text-gold/70"
+                aria-label="settings"
+                disabled
+              >
+                <Settings className="w-5 h-5" />
+              </button>
+            )}
           </div>
         </div>
       </div>
