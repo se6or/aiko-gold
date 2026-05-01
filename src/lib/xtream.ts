@@ -84,10 +84,64 @@ async function callProxy<T = unknown>(
   if (data && typeof data === "object" && "error" in data) {
     throw new Error(String((data as { error: string }).error));
   }
+async function callProxy<T = unknown>(
+  account: XtreamAccount,
+  action?: string,
+  params?: Record<string, string | number>
+): Promise<T> {
+  const { data, error } = await supabase.functions.invoke("xtream-proxy", {
+    body: {
+      server: account.server,
+      username: account.username,
+      password: account.password,
+      action,
+      params,
+    },
+  });
+  if (error) throw new Error(error.message);
+  if (data && typeof data === "object" && "error" in data) {
+    throw new Error(String((data as { error: string }).error));
+  }
   return data as T;
 }
 
-export const xtream = {
+// Lightweight in-memory cache to make tab switches instant.
+// Keyed per-account+action+params. Lives for the session.
+const memCache = new Map<string, { ts: number; data: unknown }>();
+const inflight = new Map<string, Promise<unknown>>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+function cacheKey(
+  a: XtreamAccount,
+  action?: string,
+  params?: Record<string, string | number>
+) {
+  return `${a.id}|${action || "_auth"}|${JSON.stringify(params || {})}`;
+}
+
+async function cachedCall<T>(
+  a: XtreamAccount,
+  action?: string,
+  params?: Record<string, string | number>
+): Promise<T> {
+  const key = cacheKey(a, action, params);
+  const hit = memCache.get(key);
+  if (hit && Date.now() - hit.ts < CACHE_TTL) return hit.data as T;
+  const existing = inflight.get(key);
+  if (existing) return existing as Promise<T>;
+  const p = callProxy<T>(a, action, params)
+    .then((d) => {
+      memCache.set(key, { ts: Date.now(), data: d });
+      inflight.delete(key);
+      return d;
+    })
+    .catch((e) => {
+      inflight.delete(key);
+      throw e;
+    });
+  inflight.set(key, p);
+  return p;
+}
   authenticate: (account: XtreamAccount) =>
     callProxy<{
       user_info: XtreamUserInfo;
