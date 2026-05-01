@@ -6,9 +6,9 @@ import {
   Category,
   buildLiveStreamUrl,
 } from "@/lib/xtream";
-import { Play, Info, Tv } from "lucide-react";
-import heroFallback from "@/assets/hero-fallback.jpg";
+import { Tv } from "lucide-react";
 import { VideoPlayer, PlayerSource } from "@/components/VideoPlayer";
+import { SearchBar } from "@/components/SearchBar";
 import { toast } from "sonner";
 
 export function LiveTab() {
@@ -44,8 +44,6 @@ export function LiveTab() {
     return streams.filter((s) => s.category_id === activeCat);
   }, [streams, activeCat]);
 
-  const featured = streams[0];
-
   const playChannel = (ch: LiveStream) => {
     if (!activeAccount) return;
     setPlayer({
@@ -55,45 +53,48 @@ export function LiveTab() {
     });
   };
 
+  const searchPool = useMemo(
+    () =>
+      streams.map((s) => ({
+        id: s.stream_id,
+        name: s.name,
+        icon: s.stream_icon,
+        meta: t("live"),
+        _ref: s,
+      })),
+    [streams, t]
+  );
+
+  const trending = useMemo(() => searchPool.slice(0, 6), [searchPool]);
+
   return (
     <div className="pb-20">
-      {/* Hero */}
-      <div
-        className="relative w-full h-[55vh] min-h-[360px] bg-cover bg-center"
-        style={{
-          backgroundImage: `url(${featured?.stream_icon || heroFallback})`,
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-t from-bg-primary via-black/60 to-black/30" />
-        <div className="relative z-10 h-full flex flex-col justify-end p-5 text-center">
-          <div className="flex justify-center mb-3">
-            <span className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-destructive/20 border border-destructive/40 text-destructive text-sm font-bold">
-              <span className="w-2.5 h-2.5 rounded-full bg-destructive animate-pulse-red" />
+      {/* Header */}
+      <div className="px-4 pt-6 pb-2 flex items-center justify-between">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-gold-dark">
+            AIKO
+          </p>
+          <h1 className="text-3xl font-black gold-text leading-tight flex items-center gap-2">
+            {t("live")}
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-destructive/20 border border-destructive/40 text-destructive text-[10px] font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-destructive animate-pulse-red" />
               {t("liveNow")}
             </span>
-          </div>
-          <h1 className="text-3xl font-black uppercase tracking-wide drop-shadow-lg">
-            {featured?.name || "AIKO GOLD"}
           </h1>
-          <div className="flex justify-center gap-3 mt-5">
-            <button
-              disabled={!featured}
-              onClick={() => featured && playChannel(featured)}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-full gold-bg text-black font-bold hover:scale-105 transition disabled:opacity-50"
-            >
-              <Play className="w-4 h-4" />
-              {t("play")}
-            </button>
-            <button className="flex items-center gap-2 px-6 py-2.5 rounded-full glass-dark border border-white/30 text-white font-bold hover:border-white transition">
-              <Info className="w-4 h-4" />
-              {t("info")}
-            </button>
-          </div>
         </div>
+        <SearchBar
+          items={searchPool}
+          trending={trending}
+          onPick={(it) => {
+            const ref = (it as typeof searchPool[number])._ref;
+            if (ref) playChannel(ref);
+          }}
+        />
       </div>
 
       {/* Categories */}
-      <div className="px-4 mt-5">
+      <div className="px-4 mt-3">
         <div className="flex gap-2 overflow-x-auto pb-2">
           <CatPill
             active={activeCat === "all"}
@@ -114,12 +115,12 @@ export function LiveTab() {
       </div>
 
       {/* Grid */}
-      <div className="px-4 mt-4">
+      <div className="px-4 mt-3">
         <h2 className="text-lg font-bold text-gold border-e-4 border-gold-dark pe-3 mb-3">
           {t("live")}
         </h2>
 
-        {loading ? (
+        {loading && streams.length === 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="skeleton aspect-video rounded-xl" />
