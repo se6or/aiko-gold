@@ -151,30 +151,30 @@ export const xtream = {
     }>(account),
 
   getLiveCategories: (a: XtreamAccount) =>
-    callProxy<Category[]>(a, "get_live_categories"),
+    cachedCall<Category[]>(a, "get_live_categories"),
 
   getLiveStreams: (a: XtreamAccount, categoryId?: string) =>
-    callProxy<LiveStream[]>(
+    cachedCall<LiveStream[]>(
       a,
       "get_live_streams",
       categoryId ? { category_id: categoryId } : undefined
     ),
 
   getVodCategories: (a: XtreamAccount) =>
-    callProxy<Category[]>(a, "get_vod_categories"),
+    cachedCall<Category[]>(a, "get_vod_categories"),
 
   getVodStreams: (a: XtreamAccount, categoryId?: string) =>
-    callProxy<VodStream[]>(
+    cachedCall<VodStream[]>(
       a,
       "get_vod_streams",
       categoryId ? { category_id: categoryId } : undefined
     ),
 
   getSeriesCategories: (a: XtreamAccount) =>
-    callProxy<Category[]>(a, "get_series_categories"),
+    cachedCall<Category[]>(a, "get_series_categories"),
 
   getSeries: (a: XtreamAccount, categoryId?: string) =>
-    callProxy<SeriesItem[]>(
+    cachedCall<SeriesItem[]>(
       a,
       "get_series",
       categoryId ? { category_id: categoryId } : undefined
