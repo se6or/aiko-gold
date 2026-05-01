@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Home, Film, Tv, Tv2, User } from "lucide-react";
+import { Tv, Clapperboard, User } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { LiveTab } from "@/components/LiveTab";
-import { VodSeriesTab } from "@/components/VodSeriesTab";
+import { CinemaTab } from "@/components/CinemaTab";
 import { AccountTab } from "@/components/AccountTab";
 
-type TabKey = "live" | "movies" | "series" | "account";
+type TabKey = "live" | "cinema" | "account";
 
 export function AppShell() {
   const { t } = useApp();
@@ -15,8 +15,7 @@ export function AppShell() {
     <div className="relative w-full h-full overflow-hidden bg-bg-primary">
       <div className="absolute inset-0 bottom-[65px] overflow-y-auto">
         {tab === "live" && <LiveTab key="live" />}
-        {tab === "movies" && <VodSeriesTab key="vod" kind="vod" />}
-        {tab === "series" && <VodSeriesTab key="series" kind="series" />}
+        {tab === "cinema" && <CinemaTab key="cinema" />}
         {tab === "account" && <AccountTab key="acc" />}
       </div>
 
@@ -28,16 +27,10 @@ export function AppShell() {
           label={t("live")}
         />
         <NavBtn
-          active={tab === "movies"}
-          onClick={() => setTab("movies")}
-          icon={<Film className="w-5 h-5" />}
-          label={t("movies")}
-        />
-        <NavBtn
-          active={tab === "series"}
-          onClick={() => setTab("series")}
-          icon={<Tv2 className="w-5 h-5" />}
-          label={t("series")}
+          active={tab === "cinema"}
+          onClick={() => setTab("cinema")}
+          icon={<Clapperboard className="w-5 h-5" />}
+          label={t("cinema")}
         />
         <NavBtn
           active={tab === "account"}

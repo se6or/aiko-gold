@@ -87,6 +87,44 @@ async function callProxy<T = unknown>(
   return data as T;
 }
 
+// Lightweight in-memory cache to make tab switches instant.
+// Keyed per-account+action+params. Lives for the session.
+const memCache = new Map<string, { ts: number; data: unknown }>();
+const inflight = new Map<string, Promise<unknown>>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+function cacheKey(
+  a: XtreamAccount,
+  action?: string,
+  params?: Record<string, string | number>
+) {
+  return `${a.id}|${action || "_auth"}|${JSON.stringify(params || {})}`;
+}
+
+async function cachedCall<T>(
+  a: XtreamAccount,
+  action?: string,
+  params?: Record<string, string | number>
+): Promise<T> {
+  const key = cacheKey(a, action, params);
+  const hit = memCache.get(key);
+  if (hit && Date.now() - hit.ts < CACHE_TTL) return hit.data as T;
+  const existing = inflight.get(key);
+  if (existing) return existing as Promise<T>;
+  const p = callProxy<T>(a, action, params)
+    .then((d) => {
+      memCache.set(key, { ts: Date.now(), data: d });
+      inflight.delete(key);
+      return d;
+    })
+    .catch((e) => {
+      inflight.delete(key);
+      throw e;
+    });
+  inflight.set(key, p);
+  return p;
+}
+
 export const xtream = {
   authenticate: (account: XtreamAccount) =>
     callProxy<{
@@ -95,30 +133,30 @@ export const xtream = {
     }>(account),
 
   getLiveCategories: (a: XtreamAccount) =>
-    callProxy<Category[]>(a, "get_live_categories"),
+    cachedCall<Category[]>(a, "get_live_categories"),
 
   getLiveStreams: (a: XtreamAccount, categoryId?: string) =>
-    callProxy<LiveStream[]>(
+    cachedCall<LiveStream[]>(
       a,
       "get_live_streams",
       categoryId ? { category_id: categoryId } : undefined
     ),
 
   getVodCategories: (a: XtreamAccount) =>
-    callProxy<Category[]>(a, "get_vod_categories"),
+    cachedCall<Category[]>(a, "get_vod_categories"),
 
   getVodStreams: (a: XtreamAccount, categoryId?: string) =>
-    callProxy<VodStream[]>(
+    cachedCall<VodStream[]>(
       a,
       "get_vod_streams",
       categoryId ? { category_id: categoryId } : undefined
     ),
 
   getSeriesCategories: (a: XtreamAccount) =>
-    callProxy<Category[]>(a, "get_series_categories"),
+    cachedCall<Category[]>(a, "get_series_categories"),
 
   getSeries: (a: XtreamAccount, categoryId?: string) =>
-    callProxy<SeriesItem[]>(
+    cachedCall<SeriesItem[]>(
       a,
       "get_series",
       categoryId ? { category_id: categoryId } : undefined

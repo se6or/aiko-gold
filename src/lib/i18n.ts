@@ -66,6 +66,12 @@ export const translations = {
     pause: "إيقاف",
     next: "التالي",
     quickActions: "إجراءات سريعة",
+    cinema: "سينما",
+    searchPlaceholder: "ابحث في القنوات والأفلام والمسلسلات...",
+    searchSuggestions: "اقتراحات",
+    recentSearches: "عمليات بحث أخيرة",
+    trending: "رائج الآن",
+    noSearchResults: "لا توجد نتائج للبحث",
   },
   en: {
     welcome: "Welcome to",
@@ -134,6 +140,12 @@ export const translations = {
     pause: "Pause",
     next: "Next",
     quickActions: "Quick actions",
+    cinema: "Cinema",
+    searchPlaceholder: "Search channels, movies, series...",
+    searchSuggestions: "Suggestions",
+    recentSearches: "Recent searches",
+    trending: "Trending",
+    noSearchResults: "No search results",
   },
 };
 
