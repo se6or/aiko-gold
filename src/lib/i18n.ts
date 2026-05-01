@@ -140,6 +140,12 @@ export const translations = {
     pause: "Pause",
     next: "Next",
     quickActions: "Quick actions",
+    cinema: "Cinema",
+    searchPlaceholder: "Search channels, movies, series...",
+    searchSuggestions: "Suggestions",
+    recentSearches: "Recent searches",
+    trending: "Trending",
+    noSearchResults: "No search results",
   },
 };
 
