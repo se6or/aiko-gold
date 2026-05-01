@@ -84,24 +84,6 @@ async function callProxy<T = unknown>(
   if (data && typeof data === "object" && "error" in data) {
     throw new Error(String((data as { error: string }).error));
   }
-async function callProxy<T = unknown>(
-  account: XtreamAccount,
-  action?: string,
-  params?: Record<string, string | number>
-): Promise<T> {
-  const { data, error } = await supabase.functions.invoke("xtream-proxy", {
-    body: {
-      server: account.server,
-      username: account.username,
-      password: account.password,
-      action,
-      params,
-    },
-  });
-  if (error) throw new Error(error.message);
-  if (data && typeof data === "object" && "error" in data) {
-    throw new Error(String((data as { error: string }).error));
-  }
   return data as T;
 }
 
