@@ -142,6 +142,8 @@ async function cachedCall<T>(
   inflight.set(key, p);
   return p;
 }
+
+export const xtream = {
   authenticate: (account: XtreamAccount) =>
     callProxy<{
       user_info: XtreamUserInfo;
