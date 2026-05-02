@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { AppProvider, useApp } from "@/context/AppContext";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { Splash } from "@/components/Splash";
 import { LoginScreen } from "@/components/LoginScreen";
 import { AppShell } from "@/components/AppShell";
+import { AuthScreen } from "@/components/AuthScreen";
 import logoUrl from "@/assets/aiko-logo.webp";
 import wordmarkUrl from "@/assets/aiko-gold-wordmark.webp";
 
-/** Preload an image — resolves as soon as it's decoded & cached */
 const preloadImg = (src: string) =>
   new Promise<void>((resolve) => {
     const img = new Image();
@@ -16,25 +17,28 @@ const preloadImg = (src: string) =>
 
 function Inner() {
   const { activeAccount } = useApp();
+  const { user, loading: authLoading } = useAuth();
   const [splash, setSplash] = useState(true);
 
   useEffect(() => {
-    // Wait for both: minimum visual time + assets fully decoded
     const minDelay = new Promise<void>((r) => setTimeout(r, 600));
     Promise.all([minDelay, preloadImg(logoUrl), preloadImg(wordmarkUrl)]).then(
       () => setSplash(false)
     );
   }, []);
 
-  if (splash) return <Splash />;
+  if (splash || authLoading) return <Splash />;
+  if (!user) return <AuthScreen />;
   if (!activeAccount) return <LoginScreen />;
   return <AppShell />;
 }
 
 const Index = () => (
-  <AppProvider>
-    <Inner />
-  </AppProvider>
+  <AuthProvider>
+    <AppProvider>
+      <Inner />
+    </AppProvider>
+  </AuthProvider>
 );
 
 export default Index;

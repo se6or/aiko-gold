@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, X, Clock, TrendingUp } from "lucide-react";
-import { storage } from "@/lib/storage";
 import { useApp } from "@/context/AppContext";
+import { useAuth } from "@/context/AuthContext";
+import {
+  loadSearchHistory,
+  addSearchHistory,
+  clearSearchHistory,
+} from "@/lib/searchHistory";
 
 interface SearchableItem {
   id: string | number;
