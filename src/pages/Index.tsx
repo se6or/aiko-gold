@@ -18,19 +18,48 @@ const preloadImg = (src: string) =>
 function Inner() {
   const { activeAccount } = useApp();
   const { user, loading: authLoading } = useAuth();
-  const [splash, setSplash] = useState(true);
+  // splash phases: "in" → showing, "out" → fading out, "done" → unmounted
+  const [phase, setPhase] = useState<"in" | "out" | "done">("in");
 
   useEffect(() => {
     const minDelay = new Promise<void>((r) => setTimeout(r, 5000));
     Promise.all([minDelay, preloadImg(logoUrl), preloadImg(wordmarkUrl)]).then(
-      () => setSplash(false)
+      () => setPhase("out")
     );
   }, []);
 
-  if (splash || authLoading) return <Splash />;
-  if (!user) return <AuthScreen />;
-  if (!activeAccount) return <LoginScreen />;
-  return <AppShell />;
+  useEffect(() => {
+    if (phase !== "out") return;
+    const id = setTimeout(() => setPhase("done"), 450);
+    return () => clearTimeout(id);
+  }, [phase]);
+
+  const showSplash = phase !== "done" || authLoading;
+
+  return (
+    <>
+      {showSplash && (
+        <div
+          className={`fixed inset-0 z-[9999] ${
+            phase === "out" ? "animate-fade-out pointer-events-none" : ""
+          }`}
+        >
+          <Splash />
+        </div>
+      )}
+      {!showSplash && (
+        <div key={user ? (activeAccount ? "shell" : "login") : "auth"} className="animate-fade-in">
+          {!user ? (
+            <AuthScreen />
+          ) : !activeAccount ? (
+            <LoginScreen />
+          ) : (
+            <AppShell />
+          )}
+        </div>
+      )}
+    </>
+  );
 }
 
 const Index = () => (
