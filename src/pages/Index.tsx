@@ -21,7 +21,7 @@ function Inner() {
   const [splash, setSplash] = useState(true);
 
   useEffect(() => {
-    const minDelay = new Promise<void>((r) => setTimeout(r, 600));
+    const minDelay = new Promise<void>((r) => setTimeout(r, 5000));
     Promise.all([minDelay, preloadImg(logoUrl), preloadImg(wordmarkUrl)]).then(
       () => setSplash(false)
     );
