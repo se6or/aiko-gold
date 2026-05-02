@@ -33,8 +33,6 @@ interface Props {
  */
 export function SearchBar({ items, trending = [], onPick, hint }: Props) {
   const { t } = useApp();
-  const [open, setOpen] = useState(false);
-  const [q, setQ] = useState("");
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
