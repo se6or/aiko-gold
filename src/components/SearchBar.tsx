@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, X, Clock, TrendingUp } from "lucide-react";
-import { storage } from "@/lib/storage";
 import { useApp } from "@/context/AppContext";
+import { useAuth } from "@/context/AuthContext";
+import {
+  loadSearchHistory,
+  addSearchHistory,
+  clearSearchHistory,
+} from "@/lib/searchHistory";
 
 interface SearchableItem {
   id: string | number;
@@ -28,12 +33,23 @@ interface Props {
  */
 export function SearchBar({ items, trending = [], onPick, hint }: Props) {
   const { t } = useApp();
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
-  const [history, setHistory] = useState<string[]>(() =>
-    storage.getSearchHistory()
-  );
+  const [history, setHistory] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Reload history when opening or when the signed-in user changes
+  // (so a freshly logged-in user immediately sees their cloud history).
+  useEffect(() => {
+    let active = true;
+    loadSearchHistory().then((h) => {
+      if (active) setHistory(h);
+    });
+    return () => {
+      active = false;
+    };
+  }, [user?.id, open]);
 
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 50);
@@ -60,15 +76,16 @@ export function SearchBar({ items, trending = [], onPick, hint }: Props) {
       .slice(0, 30);
   }, [q, items]);
 
-  const commit = (text: string) => {
+  const commit = async (text: string) => {
     const v = text.trim();
     if (!v) return;
-    storage.addSearchHistory(v);
-    setHistory(storage.getSearchHistory());
+    await addSearchHistory(v);
+    const next = await loadSearchHistory();
+    setHistory(next);
   };
 
   const handlePick = (item: SearchableItem) => {
-    commit(item.name);
+    void commit(item.name);
     setOpen(false);
     setQ("");
     onPick(item);
@@ -78,8 +95,8 @@ export function SearchBar({ items, trending = [], onPick, hint }: Props) {
     setQ(text);
   };
 
-  const clearHistory = () => {
-    storage.clearSearchHistory();
+  const clearHistory = async () => {
+    await clearSearchHistory();
     setHistory([]);
   };
 
