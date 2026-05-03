@@ -100,6 +100,7 @@ export function CinemaTab() {
             items={searchPool}
             trending={trending}
             scope="cinema"
+            placeholder={t("searchPlaceholderCinema")}
             onPick={(it) => {
               const ref = (it as typeof searchPool[number])._ref;
               if (ref) {

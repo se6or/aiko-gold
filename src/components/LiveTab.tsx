@@ -84,6 +84,7 @@ export function LiveTab() {
           items={searchPool}
           trending={trending}
           scope="live"
+          placeholder={t("searchPlaceholderLive")}
           onPick={(it) => {
             const ref = (it as typeof searchPool[number])._ref;
             if (ref) playChannel(ref);

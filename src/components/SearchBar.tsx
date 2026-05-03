@@ -35,7 +35,7 @@ interface Props {
  * - Shows recent searches and trending before typing.
  * - Live filters items as the user types (case-insensitive, accent-insensitive).
  */
-export function SearchBar({ items, trending = [], onPick, hint, scope = "all" }: Props) {
+export function SearchBar({ items, trending = [], onPick, hint, scope = "all", placeholder }: Props) {
   const { t } = useApp();
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
@@ -137,7 +137,7 @@ export function SearchBar({ items, trending = [], onPick, hint, scope = "all" }:
                       else commit(q);
                     } else if (e.key === "Escape") setOpen(false);
                   }}
-                  placeholder={t("searchPlaceholder")}
+                  placeholder={placeholder ?? t("searchPlaceholder")}
                   className="flex-1 bg-transparent text-foreground outline-none placeholder:text-muted-foreground text-sm"
                 />
                 {q && (
@@ -210,7 +210,7 @@ export function SearchBar({ items, trending = [], onPick, hint, scope = "all" }:
 
                   {history.length === 0 && trending.length === 0 && (
                     <p className="text-center text-sm text-muted-foreground py-10">
-                      {t("searchPlaceholder")}
+                      {placeholder ?? t("searchPlaceholder")}
                     </p>
                   )}
                 </div>
