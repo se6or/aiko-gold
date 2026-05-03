@@ -98,7 +98,7 @@ export function SearchBar({ items, trending = [], onPick, hint, scope = "all" }:
   };
 
   const clearHistory = async () => {
-    await clearSearchHistory();
+    await clearSearchHistory(scope);
     setHistory([]);
   };
 
