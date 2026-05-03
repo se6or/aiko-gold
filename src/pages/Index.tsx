@@ -22,7 +22,7 @@ function Inner() {
   const [phase, setPhase] = useState<"in" | "out" | "done">("in");
 
   useEffect(() => {
-    const minDelay = new Promise<void>((r) => setTimeout(r, 5000));
+    const minDelay = new Promise<void>((r) => setTimeout(r, 1500));
     Promise.all([minDelay, preloadImg(logoUrl), preloadImg(wordmarkUrl)]).then(
       () => setPhase("out")
     );
