@@ -81,8 +81,8 @@ export function SearchBar({ items, trending = [], onPick, hint, scope = "all" }:
   const commit = async (text: string) => {
     const v = text.trim();
     if (!v) return;
-    await addSearchHistory(v);
-    const next = await loadSearchHistory();
+    await addSearchHistory(v, scope);
+    const next = await loadSearchHistory(scope);
     setHistory(next);
   };
 
