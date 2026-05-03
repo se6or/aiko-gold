@@ -25,6 +25,8 @@ interface Props {
   hint?: string;
   /** Independent history bucket (e.g. "live", "cinema"). Defaults to "all". */
   scope?: string;
+  /** Custom placeholder override (falls back to t("searchPlaceholder")). */
+  placeholder?: string;
 }
 
 /**
