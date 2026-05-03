@@ -4,6 +4,7 @@ import { useApp } from "@/context/AppContext";
 import { toast } from "sonner";
 import logo from "@/assets/aiko-logo.webp";
 import wordmark from "@/assets/aiko-gold-wordmark.webp";
+import { BrandLoader } from "@/components/BrandLoader";
 
 export function LoginScreen() {
   const {
@@ -226,7 +227,7 @@ export function LoginScreen() {
               >
                 {loading ? (
                   <>
-                    <span className="w-4 h-4 rounded-full border-2 border-black/30 border-t-black animate-spin-gold" />
+                    <BrandLoader size="sm" />
                     <span className="tracking-[0.25em]">{t("connecting")}</span>
                   </>
                 ) : (
