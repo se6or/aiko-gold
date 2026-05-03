@@ -92,9 +92,6 @@ export function CinemaTab() {
         <div className="absolute inset-0 bg-gradient-to-b from-gold-dark/15 via-bg-primary to-bg-primary pointer-events-none" />
         <div className="relative px-4 pt-6 pb-3 flex items-center justify-between">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-gold-dark">
-              AIKO
-            </p>
             <h1 className="text-3xl font-black gold-text leading-tight">
               {t("cinema")}
             </h1>
@@ -102,6 +99,7 @@ export function CinemaTab() {
           <SearchBar
             items={searchPool}
             trending={trending}
+            scope="cinema"
             onPick={(it) => {
               const ref = (it as typeof searchPool[number])._ref;
               if (ref) {

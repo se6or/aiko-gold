@@ -23,6 +23,8 @@ interface Props {
   onPick: (item: SearchableItem) => void;
   /** Optional initial fixed label shown next to the icon. */
   hint?: string;
+  /** Independent history bucket (e.g. "live", "cinema"). Defaults to "all". */
+  scope?: string;
 }
 
 /**
@@ -31,7 +33,7 @@ interface Props {
  * - Shows recent searches and trending before typing.
  * - Live filters items as the user types (case-insensitive, accent-insensitive).
  */
-export function SearchBar({ items, trending = [], onPick, hint }: Props) {
+export function SearchBar({ items, trending = [], onPick, hint, scope = "all" }: Props) {
   const { t } = useApp();
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
@@ -43,13 +45,13 @@ export function SearchBar({ items, trending = [], onPick, hint }: Props) {
   // (so a freshly logged-in user immediately sees their cloud history).
   useEffect(() => {
     let active = true;
-    loadSearchHistory().then((h) => {
+    loadSearchHistory(scope).then((h) => {
       if (active) setHistory(h);
     });
     return () => {
       active = false;
     };
-  }, [user?.id, open]);
+  }, [user?.id, open, scope]);
 
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 50);
@@ -79,8 +81,8 @@ export function SearchBar({ items, trending = [], onPick, hint }: Props) {
   const commit = async (text: string) => {
     const v = text.trim();
     if (!v) return;
-    await addSearchHistory(v);
-    const next = await loadSearchHistory();
+    await addSearchHistory(v, scope);
+    const next = await loadSearchHistory(scope);
     setHistory(next);
   };
 
@@ -96,7 +98,7 @@ export function SearchBar({ items, trending = [], onPick, hint }: Props) {
   };
 
   const clearHistory = async () => {
-    await clearSearchHistory();
+    await clearSearchHistory(scope);
     setHistory([]);
   };
 

@@ -72,9 +72,6 @@ export function LiveTab() {
       {/* Header */}
       <div className="px-4 pt-6 pb-2 flex items-center justify-between">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.4em] text-gold-dark">
-            AIKO
-          </p>
           <h1 className="text-3xl font-black gold-text leading-tight flex items-center gap-2">
             {t("live")}
             <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-destructive/20 border border-destructive/40 text-destructive text-[10px] font-bold">
@@ -86,6 +83,7 @@ export function LiveTab() {
         <SearchBar
           items={searchPool}
           trending={trending}
+          scope="live"
           onPick={(it) => {
             const ref = (it as typeof searchPool[number])._ref;
             if (ref) playChannel(ref);

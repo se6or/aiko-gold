@@ -6,7 +6,7 @@ const MAX = 10;
 /** Get history merged from cloud (if logged in) + local fallback. */
 export async function loadSearchHistory(scope: string = "all"): Promise<string[]> {
   const { data: auth } = await supabase.auth.getUser();
-  const local = storage.getSearchHistory();
+  const local = scope === "all" ? storage.getSearchHistory() : [];
   if (!auth.user) return local.slice(0, MAX);
 
   const { data, error } = await supabase
@@ -19,7 +19,6 @@ export async function loadSearchHistory(scope: string = "all"): Promise<string[]
 
   if (error || !data) return local.slice(0, MAX);
 
-  // Merge: cloud first, then any local items not in cloud (legacy)
   const cloudList = data.map((r) => r.query);
   const merged = [...cloudList];
   for (const q of local) if (!merged.includes(q)) merged.push(q);
@@ -30,7 +29,7 @@ export async function loadSearchHistory(scope: string = "all"): Promise<string[]
 export async function addSearchHistory(q: string, scope: string = "all") {
   const v = q.trim();
   if (!v) return;
-  storage.addSearchHistory(v);
+  if (scope === "all") storage.addSearchHistory(v);
 
   const { data: auth } = await supabase.auth.getUser();
   if (!auth.user) return;
@@ -63,7 +62,7 @@ export async function addSearchHistory(q: string, scope: string = "all") {
 }
 
 export async function clearSearchHistory(scope: string = "all") {
-  storage.clearSearchHistory();
+  if (scope === "all") storage.clearSearchHistory();
   const { data: auth } = await supabase.auth.getUser();
   if (!auth.user) return;
   await supabase
