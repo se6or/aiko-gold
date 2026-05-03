@@ -45,13 +45,13 @@ export function SearchBar({ items, trending = [], onPick, hint, scope = "all" }:
   // (so a freshly logged-in user immediately sees their cloud history).
   useEffect(() => {
     let active = true;
-    loadSearchHistory().then((h) => {
+    loadSearchHistory(scope).then((h) => {
       if (active) setHistory(h);
     });
     return () => {
       active = false;
     };
-  }, [user?.id, open]);
+  }, [user?.id, open, scope]);
 
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 50);
