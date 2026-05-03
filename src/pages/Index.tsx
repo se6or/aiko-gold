@@ -48,7 +48,10 @@ function Inner() {
         </div>
       )}
       {!showSplash && (
-        <div key={user ? (activeAccount ? "shell" : "login") : "auth"} className="animate-fade-in">
+        <div
+          key={user ? (activeAccount ? "shell" : "login") : "auth"}
+          className="animate-fade-in fixed inset-0 overflow-auto"
+        >
           {!user ? (
             <AuthScreen />
           ) : !activeAccount ? (
