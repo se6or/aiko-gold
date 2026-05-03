@@ -498,7 +498,7 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
       <div className="relative px-5 pb-24 -mt-8">
         {loading ? (
           <div className="flex justify-center py-10">
-            <Loader2 className="w-10 h-10 text-gold animate-spin-gold" />
+            <BrandLoader size="lg" />
           </div>
         ) : (
           <>

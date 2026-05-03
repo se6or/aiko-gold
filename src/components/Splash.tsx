@@ -1,5 +1,6 @@
 import logo from "@/assets/aiko-logo.webp";
 import wordmark from "@/assets/aiko-gold-wordmark.webp";
+import { BrandLoader } from "@/components/BrandLoader";
 
 export function Splash() {
   return (
@@ -13,7 +14,7 @@ export function Splash() {
           fetchPriority="high"
           decoding="sync"
           loading="eager"
-          className="w-36 h-36 animate-float drop-shadow-[0_0_30px_hsl(var(--gold-dark)/0.8)]"
+          className="w-36 h-36 drop-shadow-[0_0_30px_hsl(var(--gold-dark)/0.8)]"
         />
         <img
           src={wordmark}
@@ -24,20 +25,7 @@ export function Splash() {
           className="mt-6 h-16 sm:h-20 w-auto max-w-[78vw] object-contain drop-shadow-[0_4px_24px_hsl(var(--gold-dark)/0.55)]"
         />
 
-        {/* Loader: gold bars */}
-        <div className="flex items-end gap-[3px] mt-10 h-7" role="status" aria-label="loading">
-          {[0, 1, 2, 3, 4].map((i) => (
-            <span
-              key={i}
-              className="w-[4px] rounded-sm animate-gold-bars"
-              style={{
-                background: "linear-gradient(to top, hsl(var(--gold-dark)), hsl(var(--gold)))",
-                animationDelay: `${i * 0.12}s`,
-                filter: "drop-shadow(0 0 4px hsl(var(--gold) / 0.5))",
-              }}
-            />
-          ))}
-        </div>
+        <BrandLoader size="lg" className="mt-10" />
       </div>
     </div>
   );

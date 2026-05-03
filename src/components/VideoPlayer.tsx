@@ -340,7 +340,7 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
               {error}
             </div>
           ) : (
-            <Loader2 className="w-14 h-14 text-gold animate-spin-gold" />
+            <BrandLoader size="lg" />
           )}
         </div>
       )}
