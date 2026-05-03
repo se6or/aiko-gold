@@ -23,6 +23,8 @@ interface Props {
   onPick: (item: SearchableItem) => void;
   /** Optional initial fixed label shown next to the icon. */
   hint?: string;
+  /** Independent history bucket (e.g. "live", "cinema"). Defaults to "all". */
+  scope?: string;
 }
 
 /**
