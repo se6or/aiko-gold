@@ -33,7 +33,7 @@ interface Props {
  * - Shows recent searches and trending before typing.
  * - Live filters items as the user types (case-insensitive, accent-insensitive).
  */
-export function SearchBar({ items, trending = [], onPick, hint }: Props) {
+export function SearchBar({ items, trending = [], onPick, hint, scope = "all" }: Props) {
   const { t } = useApp();
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
