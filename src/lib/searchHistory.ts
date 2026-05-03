@@ -62,7 +62,7 @@ export async function addSearchHistory(q: string, scope: string = "all") {
 }
 
 export async function clearSearchHistory(scope: string = "all") {
-  storage.clearSearchHistory();
+  if (scope === "all") storage.clearSearchHistory();
   const { data: auth } = await supabase.auth.getUser();
   if (!auth.user) return;
   await supabase
