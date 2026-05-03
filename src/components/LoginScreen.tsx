@@ -4,6 +4,7 @@ import { useApp } from "@/context/AppContext";
 import { toast } from "sonner";
 import logo from "@/assets/aiko-logo.webp";
 import wordmark from "@/assets/aiko-gold-wordmark.webp";
+import { BrandLoader } from "@/components/BrandLoader";
 
 export function LoginScreen() {
   const {

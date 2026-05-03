@@ -23,6 +23,7 @@ import {
 import { storage } from "@/lib/storage";
 import { VideoPlayer, PlayerSource } from "@/components/VideoPlayer";
 import { toast } from "sonner";
+import { BrandLoader } from "@/components/BrandLoader";
 
 type Kind = "vod" | "series";
 
