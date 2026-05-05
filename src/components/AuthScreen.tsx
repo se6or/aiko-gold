@@ -6,7 +6,7 @@ import logoUrl from "@/assets/aiko-logo.webp";
 import wordmarkUrl from "@/assets/aiko-gold-wordmark.webp";
 
 export function AuthScreen() {
-  const { signInEmail, signUpEmail, signInGoogle } = useAuth();
+  const { signInEmail, signUpEmail } = useAuth();
   const { t } = useApp();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -30,14 +30,6 @@ export function AuthScreen() {
     }
   };
 
-  const google = async () => {
-    setBusy(true);
-    const { error } = await signInGoogle();
-    if (error) {
-      setBusy(false);
-      toast.error(error);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 py-10">
