@@ -94,20 +94,23 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
         enableWorker: true,
         lowLatencyMode: true,
         startPosition: source.isLive ? -1 : 0,
-        maxBufferLength: source.isLive ? 5 : 15,
-        maxMaxBufferLength: source.isLive ? 10 : 30,
-        maxBufferSize: 30 * 1000 * 1000,
-        maxBufferHole: 0.3,
-        abrEwmaDefaultEstimate: 1_000_000,
-        abrEwmaDefaultEstimateMax: 5_000_000,
+        maxBufferLength: source.isLive ? 4 : 12,
+        maxMaxBufferLength: source.isLive ? 8 : 24,
+        maxBufferSize: 60 * 1000 * 1000,
+        maxBufferHole: 0.5,
+        abrEwmaDefaultEstimate: 2_000_000,
+        abrEwmaDefaultEstimateMax: 10_000_000,
         startFragPrefetch: true,
-        manifestLoadingTimeOut: 8000,
-        manifestLoadingMaxRetry: 3,
-        levelLoadingTimeOut: 8000,
-        fragLoadingTimeOut: 15000,
-        backBufferLength: source.isLive ? 5 : 30,
-        liveSyncDurationCount: source.isLive ? 2 : 3,
-        liveMaxLatencyDurationCount: source.isLive ? 4 : Infinity,
+        progressive: true,
+        testBandwidth: false,
+        startLevel: -1,
+        manifestLoadingTimeOut: 5000,
+        manifestLoadingMaxRetry: 4,
+        levelLoadingTimeOut: 5000,
+        fragLoadingTimeOut: 10000,
+        backBufferLength: source.isLive ? 0 : 15,
+        liveSyncDurationCount: source.isLive ? 1 : 3,
+        liveMaxLatencyDurationCount: source.isLive ? 3 : Infinity,
         liveDurationInfinity: !!source.isLive,
       });
       hlsRef.current = hls;
@@ -318,7 +321,7 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
         autoPlay
       />
 
-      {/* Center tap overlay */}
+      {/* Center tap overlay — only toggles UI visibility, not play */}
       <button
         type="button"
         onClick={(e) => {
@@ -327,13 +330,32 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
             e.stopPropagation();
             return;
           }
-          togglePlay();
+          if (controlsVisible) {
+            setControlsVisible(false);
+            if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
+          } else {
+            showControls();
+          }
         }}
         onDoubleClick={toggleFullscreen}
         className="absolute inset-0 z-10"
-        aria-label="play/pause"
+        aria-label="toggle controls"
       />
 
+      {/* Big center play icon — only visible when paused, click to play */}
+      {!playing && !buffering && !error && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            togglePlay();
+          }}
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 grid place-items-center text-gold/90 hover:text-gold transition-transform hover:scale-110 active:scale-95 drop-shadow-[0_4px_18px_hsl(var(--gold-dark)/0.6)]"
+          aria-label="play"
+        >
+          <Play className="w-16 h-16" fill="currentColor" />
+        </button>
+      )}
       {(buffering || error) && (
         <div className="absolute inset-0 grid place-items-center pointer-events-none z-20">
           {error ? (
@@ -472,13 +494,13 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
             )}
             <button
               onClick={togglePlay}
-              className="w-12 h-12 grid place-items-center rounded-full gold-bg text-black hover:scale-105 transition"
+              className="w-12 h-12 grid place-items-center text-gold hover:text-white hover:scale-110 active:scale-95 transition"
               aria-label="play/pause"
             >
               {playing ? (
-                <Pause className="w-5 h-5" />
+                <Pause className="w-7 h-7" fill="currentColor" />
               ) : (
-                <Play className="w-5 h-5" />
+                <Play className="w-7 h-7" fill="currentColor" />
               )}
             </button>
             {!source.isLive && (
