@@ -326,27 +326,6 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
         autoPlay
       />
 
-      {/* Center tap overlay — only toggles UI visibility, not play */}
-      <button
-        type="button"
-        onClick={(e) => {
-          if (showQualityMenu) {
-            setShowQualityMenu(false);
-            e.stopPropagation();
-            return;
-          }
-          if (controlsVisible) {
-            setControlsVisible(false);
-            if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
-          } else {
-            showControls();
-          }
-        }}
-        onDoubleClick={toggleFullscreen}
-        className="absolute inset-0 z-10"
-        aria-label="toggle controls"
-      />
-
       {/* Big center play icon — only visible when paused, click to play */}
       {!playing && !buffering && !error && (
         <button
