@@ -8,7 +8,7 @@ import {
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
+
 
 interface AuthContextValue {
   user: User | null;
@@ -16,7 +16,7 @@ interface AuthContextValue {
   loading: boolean;
   signInEmail: (email: string, password: string) => Promise<{ error?: string }>;
   signUpEmail: (email: string, password: string) => Promise<{ error?: string }>;
-  signInGoogle: () => Promise<{ error?: string }>;
+  
   signOut: () => Promise<void>;
 }
 
@@ -56,21 +56,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error: error?.message };
   }, []);
 
-  const signInGoogle = useCallback(async () => {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) return { error: String(result.error.message ?? result.error) };
-    return {};
-  }, []);
 
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
   }, []);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, session, loading, signInEmail, signUpEmail, signInGoogle, signOut }),
-    [user, session, loading, signInEmail, signUpEmail, signInGoogle, signOut]
+    () => ({ user, session, loading, signInEmail, signUpEmail, signOut }),
+    [user, session, loading, signInEmail, signUpEmail, signOut]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
