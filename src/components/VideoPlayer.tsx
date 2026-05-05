@@ -94,21 +94,26 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
         enableWorker: true,
         lowLatencyMode: true,
         startPosition: source.isLive ? -1 : 0,
-        maxBufferLength: source.isLive ? 4 : 12,
-        maxMaxBufferLength: source.isLive ? 8 : 24,
-        maxBufferSize: 60 * 1000 * 1000,
-        maxBufferHole: 0.5,
-        abrEwmaDefaultEstimate: 2_000_000,
+        // Aggressive fast-start: prefer lowest level first, smallest buffer
+        startLevel: 0,
+        testBandwidth: false,
+        abrEwmaDefaultEstimate: 500_000,
         abrEwmaDefaultEstimateMax: 10_000_000,
         startFragPrefetch: true,
         progressive: true,
-        testBandwidth: false,
-        startLevel: -1,
-        manifestLoadingTimeOut: 5000,
-        manifestLoadingMaxRetry: 4,
-        levelLoadingTimeOut: 5000,
-        fragLoadingTimeOut: 10000,
-        backBufferLength: source.isLive ? 0 : 15,
+        maxBufferLength: source.isLive ? 3 : 8,
+        maxMaxBufferLength: source.isLive ? 6 : 18,
+        maxBufferSize: 60 * 1000 * 1000,
+        maxBufferHole: 0.8,
+        highBufferWatchdogPeriod: 1,
+        nudgeMaxRetry: 10,
+        manifestLoadingTimeOut: 4000,
+        manifestLoadingMaxRetry: 6,
+        levelLoadingTimeOut: 4000,
+        levelLoadingMaxRetry: 6,
+        fragLoadingTimeOut: 8000,
+        fragLoadingMaxRetry: 6,
+        backBufferLength: source.isLive ? 0 : 10,
         liveSyncDurationCount: source.isLive ? 1 : 3,
         liveMaxLatencyDurationCount: source.isLive ? 3 : Infinity,
         liveDurationInfinity: !!source.isLive,
@@ -319,27 +324,6 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
         className="w-full h-full object-contain bg-black"
         playsInline
         autoPlay
-      />
-
-      {/* Center tap overlay — only toggles UI visibility, not play */}
-      <button
-        type="button"
-        onClick={(e) => {
-          if (showQualityMenu) {
-            setShowQualityMenu(false);
-            e.stopPropagation();
-            return;
-          }
-          if (controlsVisible) {
-            setControlsVisible(false);
-            if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
-          } else {
-            showControls();
-          }
-        }}
-        onDoubleClick={toggleFullscreen}
-        className="absolute inset-0 z-10"
-        aria-label="toggle controls"
       />
 
       {/* Big center play icon — only visible when paused, click to play */}
