@@ -321,7 +321,7 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
         autoPlay
       />
 
-      {/* Center tap overlay */}
+      {/* Center tap overlay — only toggles UI visibility, not play */}
       <button
         type="button"
         onClick={(e) => {
@@ -330,13 +330,32 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
             e.stopPropagation();
             return;
           }
-          togglePlay();
+          if (controlsVisible) {
+            setControlsVisible(false);
+            if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
+          } else {
+            showControls();
+          }
         }}
         onDoubleClick={toggleFullscreen}
         className="absolute inset-0 z-10"
-        aria-label="play/pause"
+        aria-label="toggle controls"
       />
 
+      {/* Big center play icon — only visible when paused, click to play */}
+      {!playing && !buffering && !error && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            togglePlay();
+          }}
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 grid place-items-center text-gold/90 hover:text-gold transition-transform hover:scale-110 active:scale-95 drop-shadow-[0_4px_18px_hsl(var(--gold-dark)/0.6)]"
+          aria-label="play"
+        >
+          <Play className="w-16 h-16" fill="currentColor" />
+        </button>
+      )}
       {(buffering || error) && (
         <div className="absolute inset-0 grid place-items-center pointer-events-none z-20">
           {error ? (
