@@ -6,7 +6,7 @@ import logoUrl from "@/assets/aiko-logo.webp";
 import wordmarkUrl from "@/assets/aiko-gold-wordmark.webp";
 
 export function AuthScreen() {
-  const { signInEmail, signUpEmail, signInGoogle } = useAuth();
+  const { signInEmail, signUpEmail } = useAuth();
   const { t } = useApp();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -30,14 +30,6 @@ export function AuthScreen() {
     }
   };
 
-  const google = async () => {
-    setBusy(true);
-    const { error } = await signInGoogle();
-    if (error) {
-      setBusy(false);
-      toast.error(error);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 py-10">
@@ -53,22 +45,6 @@ export function AuthScreen() {
         <p className="text-center text-xs text-muted-foreground mb-5">
           مزامنة سجل البحث عبر أجهزتك
         </p>
-
-        <button
-          type="button"
-          onClick={google}
-          disabled={busy}
-          className="w-full h-11 rounded-full bg-white text-black font-semibold flex items-center justify-center gap-2 hover:bg-white/90 disabled:opacity-50"
-        >
-          <GoogleIcon />
-          المتابعة عبر Google
-        </button>
-
-        <div className="flex items-center gap-3 my-4">
-          <span className="flex-1 h-px bg-gold-dark/30" />
-          <span className="text-[11px] text-muted-foreground">أو</span>
-          <span className="flex-1 h-px bg-gold-dark/30" />
-        </div>
 
         <form onSubmit={submit} className="space-y-3">
           <input
