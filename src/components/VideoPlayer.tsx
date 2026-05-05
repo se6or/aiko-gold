@@ -494,13 +494,13 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
             )}
             <button
               onClick={togglePlay}
-              className="w-12 h-12 grid place-items-center rounded-full gold-bg text-black hover:scale-105 transition"
+              className="w-12 h-12 grid place-items-center text-gold hover:text-white hover:scale-110 active:scale-95 transition"
               aria-label="play/pause"
             >
               {playing ? (
-                <Pause className="w-5 h-5" />
+                <Pause className="w-7 h-7" fill="currentColor" />
               ) : (
-                <Play className="w-5 h-5" />
+                <Play className="w-7 h-7" fill="currentColor" />
               )}
             </button>
             {!source.isLive && (
