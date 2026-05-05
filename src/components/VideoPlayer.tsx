@@ -317,13 +317,33 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
       ref={containerRef}
       className="fixed inset-0 z-[12000] bg-black flex items-center justify-center animate-fade-in"
       onMouseMove={showControls}
-      onTouchStart={showControls}
     >
       <video
         ref={videoRef}
         className="w-full h-full object-contain bg-black"
         playsInline
         autoPlay
+      />
+
+      {/* Tap layer: single tap toggles controls visibility */}
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (showQualityMenu) {
+            setShowQualityMenu(false);
+            return;
+          }
+          if (controlsVisible) {
+            setControlsVisible(false);
+            if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
+          } else {
+            showControls();
+          }
+        }}
+        onDoubleClick={toggleFullscreen}
+        className="absolute inset-0 z-10"
+        aria-label="toggle controls"
       />
 
       {/* Big center play icon — only visible when paused, click to play */}
