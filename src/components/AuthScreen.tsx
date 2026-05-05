@@ -46,22 +46,6 @@ export function AuthScreen() {
           مزامنة سجل البحث عبر أجهزتك
         </p>
 
-        <button
-          type="button"
-          onClick={google}
-          disabled={busy}
-          className="w-full h-11 rounded-full bg-white text-black font-semibold flex items-center justify-center gap-2 hover:bg-white/90 disabled:opacity-50"
-        >
-          <GoogleIcon />
-          المتابعة عبر Google
-        </button>
-
-        <div className="flex items-center gap-3 my-4">
-          <span className="flex-1 h-px bg-gold-dark/30" />
-          <span className="text-[11px] text-muted-foreground">أو</span>
-          <span className="flex-1 h-px bg-gold-dark/30" />
-        </div>
-
         <form onSubmit={submit} className="space-y-3">
           <input
             type="email"
