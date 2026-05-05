@@ -317,7 +317,6 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
       ref={containerRef}
       className="fixed inset-0 z-[12000] bg-black flex items-center justify-center animate-fade-in"
       onMouseMove={showControls}
-      onTouchStart={showControls}
     >
       <video
         ref={videoRef}
@@ -326,20 +325,27 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
         autoPlay
       />
 
-      {/* Big center play icon — only visible when paused, click to play */}
-      {!playing && !buffering && !error && (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            togglePlay();
-          }}
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 grid place-items-center text-gold/90 hover:text-gold transition-transform hover:scale-110 active:scale-95 drop-shadow-[0_4px_18px_hsl(var(--gold-dark)/0.6)]"
-          aria-label="play"
-        >
-          <Play className="w-16 h-16" fill="currentColor" />
-        </button>
-      )}
+      {/* Tap layer: single tap toggles controls visibility */}
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (showQualityMenu) {
+            setShowQualityMenu(false);
+            return;
+          }
+          if (controlsVisible) {
+            setControlsVisible(false);
+            if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
+          } else {
+            showControls();
+          }
+        }}
+        onDoubleClick={toggleFullscreen}
+        className="absolute inset-0 z-10"
+        aria-label="toggle controls"
+      />
+
       {(buffering || error) && (
         <div className="absolute inset-0 grid place-items-center pointer-events-none z-20">
           {error ? (
