@@ -15,8 +15,6 @@ const preloadImg = (src: string) =>
 
 function Inner() {
   const { activeAccount } = useApp();
-  const { user, loading: authLoading } = useAuth();
-  // splash phases: "in" → showing, "out" → fading out, "done" → unmounted
   const [phase, setPhase] = useState<"in" | "out" | "done">("in");
 
   useEffect(() => {
@@ -32,7 +30,7 @@ function Inner() {
     return () => clearTimeout(id);
   }, [phase]);
 
-  const showSplash = phase !== "done" || authLoading;
+  const showSplash = phase !== "done";
 
   return (
     <>
@@ -47,16 +45,10 @@ function Inner() {
       )}
       {!showSplash && (
         <div
-          key={user ? (activeAccount ? "shell" : "login") : "auth"}
+          key={activeAccount ? "shell" : "login"}
           className="animate-fade-in fixed inset-0 overflow-auto"
         >
-          {!user ? (
-            <AuthScreen />
-          ) : !activeAccount ? (
-            <LoginScreen />
-          ) : (
-            <AppShell />
-          )}
+          {!activeAccount ? <LoginScreen /> : <AppShell />}
         </div>
       )}
     </>
@@ -64,11 +56,9 @@ function Inner() {
 }
 
 const Index = () => (
-  <AuthProvider>
-    <AppProvider>
-      <Inner />
-    </AppProvider>
-  </AuthProvider>
+  <AppProvider>
+    <Inner />
+  </AppProvider>
 );
 
 export default Index;
