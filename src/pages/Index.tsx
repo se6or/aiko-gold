@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import { AppProvider, useApp } from "@/context/AppContext";
-import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { Splash } from "@/components/Splash";
 import { LoginScreen } from "@/components/LoginScreen";
 import { AppShell } from "@/components/AppShell";
-import { AuthScreen } from "@/components/AuthScreen";
 import logoUrl from "@/assets/aiko-logo.webp";
 import wordmarkUrl from "@/assets/aiko-gold-wordmark.webp";
 
