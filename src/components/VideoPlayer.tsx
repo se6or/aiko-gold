@@ -59,6 +59,7 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
   const containerRef = useRef<HTMLDivElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const hideTimerRef = useRef<number | null>(null);
+  const clickTimerRef = useRef<number | null>(null);
 
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
