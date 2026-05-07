@@ -164,6 +164,55 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
       : series?.info?.releaseDate?.slice(0, 4);
   const duration = kind === "vod" ? vod?.info?.duration : undefined;
 
+  // Bilingual translations (ar + en) for plot and genre
+  const [plotAr, setPlotAr] = useState<string>("");
+  const [plotEn, setPlotEn] = useState<string>("");
+  const [genreAr, setGenreAr] = useState<string>("");
+  const [genreEn, setGenreEn] = useState<string>("");
+  const [translating, setTranslating] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const run = async (
+      text: string,
+      setAr: (s: string) => void,
+      setEn: (s: string) => void
+    ) => {
+      if (!text || !text.trim()) {
+        setAr("");
+        setEn("");
+        return;
+      }
+      try {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data, error } = await supabase.functions.invoke("translate", {
+          body: { text },
+        });
+        if (cancelled) return;
+        if (error) throw error;
+        const ar = (data as { ar?: string })?.ar || "";
+        const en = (data as { en?: string })?.en || "";
+        setAr(ar);
+        setEn(en);
+      } catch {
+        if (!cancelled) {
+          setAr(text);
+          setEn(text);
+        }
+      }
+    };
+    setTranslating(true);
+    Promise.all([
+      run(plot || "", setPlotAr, setPlotEn),
+      run(genre || "", setGenreAr, setGenreEn),
+    ]).finally(() => {
+      if (!cancelled) setTranslating(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [plot, genre]);
+
   const playVod = () => {
     if (!activeAccount || !vod) return;
     const ext = vod.movie_data?.container_extension || "mp4";
@@ -558,29 +607,83 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
               </button>
             </div>
 
-            {/* Plot */}
+            {/* Plot — bilingual (Arabic + English) */}
             {plot && (
-              <p className="text-sm text-muted-foreground leading-7 text-center max-w-2xl mx-auto mb-5">
-                {plot}
-              </p>
+              <div className="max-w-2xl mx-auto mb-5 space-y-3">
+                {translating && !plotAr && !plotEn ? (
+                  <p className="text-sm text-muted-foreground leading-7 text-center">
+                    {plot}
+                  </p>
+                ) : (
+                  <>
+                    {plotAr && (
+                      <div dir="rtl" className="text-right">
+                        <span className="inline-block text-[10px] font-bold text-gold/80 mb-1 tracking-wider">
+                          العربية
+                        </span>
+                        <p className="text-sm text-muted-foreground leading-7">
+                          {plotAr}
+                        </p>
+                      </div>
+                    )}
+                    {plotEn && (
+                      <div dir="ltr" className="text-left">
+                        <span className="inline-block text-[10px] font-bold text-gold/80 mb-1 tracking-wider">
+                          ENGLISH
+                        </span>
+                        <p className="text-sm text-muted-foreground leading-7">
+                          {plotEn}
+                        </p>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
             )}
 
-            {/* Genre tags */}
+            {/* Genre tags — bilingual */}
             {genre && (
-              <div className="flex justify-center gap-2 flex-wrap mb-8">
-                {genre
-                  .split(/[,،/]/)
-                  .map((g) => g.trim())
-                  .filter(Boolean)
-                  .slice(0, 6)
-                  .map((g) => (
-                    <span
-                      key={g}
-                      className="px-3 py-1 rounded-full bg-gold-dark/20 border border-gold-dark/40 text-gold text-xs font-bold"
-                    >
-                      {g}
-                    </span>
-                  ))}
+              <div className="mb-8 space-y-2">
+                {(genreAr || (!translating && !genreEn)) && (
+                  <div
+                    dir="rtl"
+                    className="flex justify-center gap-2 flex-wrap"
+                  >
+                    {(genreAr || genre)
+                      .split(/[,،/]/)
+                      .map((g) => g.trim())
+                      .filter(Boolean)
+                      .slice(0, 6)
+                      .map((g, i) => (
+                        <span
+                          key={`ar-${g}-${i}`}
+                          className="px-3 py-1 rounded-full bg-gold-dark/20 border border-gold-dark/40 text-gold text-xs font-bold"
+                        >
+                          {g}
+                        </span>
+                      ))}
+                  </div>
+                )}
+                {genreEn && (
+                  <div
+                    dir="ltr"
+                    className="flex justify-center gap-2 flex-wrap"
+                  >
+                    {genreEn
+                      .split(/[,،/]/)
+                      .map((g) => g.trim())
+                      .filter(Boolean)
+                      .slice(0, 6)
+                      .map((g, i) => (
+                        <span
+                          key={`en-${g}-${i}`}
+                          className="px-3 py-1 rounded-full bg-gold-dark/10 border border-gold-dark/30 text-gold/90 text-xs font-bold"
+                        >
+                          {g}
+                        </span>
+                      ))}
+                  </div>
+                )}
               </div>
             )}
 
