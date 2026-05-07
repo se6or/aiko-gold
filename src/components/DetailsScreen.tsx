@@ -607,20 +607,20 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
                           activeSeason === sk ? "scale-105" : "opacity-70"
                         }`}
                       >
-                        <div
-                          className={`w-24 h-32 rounded-xl overflow-hidden border-2 ${
-                            activeSeason === sk
-                              ? "border-gold shadow-gold"
-                              : "border-transparent"
-                          } bg-card`}
-                        >
-                          {cover ? (
-                            <img
-                              src={cover}
-                              alt={`Season ${sk}`}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
+                         <div
+                           className={`w-24 h-36 rounded-xl overflow-hidden border-2 ${
+                             activeSeason === sk
+                               ? "border-gold shadow-gold"
+                               : "border-transparent"
+                           } bg-black flex items-center justify-center`}
+                         >
+                           {cover ? (
+                             <img
+                               src={cover}
+                               alt={`Season ${sk}`}
+                               className="w-full h-full object-contain"
+                               loading="lazy"
+                             />
                           ) : (
                             <div className="w-full h-full grid place-items-center text-gold-dark">
                               <FilmIcon className="w-8 h-8" />
