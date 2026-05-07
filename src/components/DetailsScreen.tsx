@@ -164,6 +164,55 @@ export function DetailsScreen({ kind, item, onClose }: Props) {
       : series?.info?.releaseDate?.slice(0, 4);
   const duration = kind === "vod" ? vod?.info?.duration : undefined;
 
+  // Bilingual translations (ar + en) for plot and genre
+  const [plotAr, setPlotAr] = useState<string>("");
+  const [plotEn, setPlotEn] = useState<string>("");
+  const [genreAr, setGenreAr] = useState<string>("");
+  const [genreEn, setGenreEn] = useState<string>("");
+  const [translating, setTranslating] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const run = async (
+      text: string,
+      setAr: (s: string) => void,
+      setEn: (s: string) => void
+    ) => {
+      if (!text || !text.trim()) {
+        setAr("");
+        setEn("");
+        return;
+      }
+      try {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data, error } = await supabase.functions.invoke("translate", {
+          body: { text },
+        });
+        if (cancelled) return;
+        if (error) throw error;
+        const ar = (data as { ar?: string })?.ar || "";
+        const en = (data as { en?: string })?.en || "";
+        setAr(ar);
+        setEn(en);
+      } catch {
+        if (!cancelled) {
+          setAr(text);
+          setEn(text);
+        }
+      }
+    };
+    setTranslating(true);
+    Promise.all([
+      run(plot || "", setPlotAr, setPlotEn),
+      run(genre || "", setGenreAr, setGenreEn),
+    ]).finally(() => {
+      if (!cancelled) setTranslating(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [plot, genre]);
+
   const playVod = () => {
     if (!activeAccount || !vod) return;
     const ext = vod.movie_data?.container_extension || "mp4";
