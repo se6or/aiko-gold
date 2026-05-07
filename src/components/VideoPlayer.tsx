@@ -59,6 +59,7 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
   const containerRef = useRef<HTMLDivElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const hideTimerRef = useRef<number | null>(null);
+  const clickTimerRef = useRef<number | null>(null);
 
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
@@ -325,23 +326,31 @@ export function VideoPlayer({ source, onClose, onPlayingChange, onRequestToggle 
         autoPlay
       />
 
-      {/* Tap layer: single tap toggles controls visibility */}
+      {/* Tap layer: single tap toggles controls; double tap = fullscreen */}
       <button
         type="button"
         onClick={(e) => {
           e.stopPropagation();
-          if (showQualityMenu) {
-            setShowQualityMenu(false);
+          if (clickTimerRef.current) {
+            window.clearTimeout(clickTimerRef.current);
+            clickTimerRef.current = null;
+            toggleFullscreen();
             return;
           }
-          if (controlsVisible) {
-            setControlsVisible(false);
-            if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
-          } else {
-            showControls();
-          }
+          clickTimerRef.current = window.setTimeout(() => {
+            clickTimerRef.current = null;
+            if (showQualityMenu) {
+              setShowQualityMenu(false);
+              return;
+            }
+            if (controlsVisible) {
+              setControlsVisible(false);
+              if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
+            } else {
+              showControls();
+            }
+          }, 220);
         }}
-        onDoubleClick={toggleFullscreen}
         className="absolute inset-0 z-10"
         aria-label="toggle controls"
       />
