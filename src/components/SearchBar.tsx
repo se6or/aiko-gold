@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, X, Clock, TrendingUp } from "lucide-react";
 import { useApp } from "@/context/AppContext";
-import { useAuth } from "@/context/AuthContext";
 import {
   loadSearchHistory,
   addSearchHistory,
@@ -37,7 +36,7 @@ interface Props {
  */
 export function SearchBar({ items, trending = [], onPick, hint, scope = "all", placeholder }: Props) {
   const { t } = useApp();
-  const { user } = useAuth();
+  
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const [history, setHistory] = useState<string[]>([]);
@@ -53,7 +52,7 @@ export function SearchBar({ items, trending = [], onPick, hint, scope = "all", p
     return () => {
       active = false;
     };
-  }, [user?.id, open, scope]);
+  }, [open, scope]);
 
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 50);
