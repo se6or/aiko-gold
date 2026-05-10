@@ -26,6 +26,22 @@ export function CinemaTab() {
   const [activeCat, setActiveCat] = useState<string>("all");
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<VodStream | SeriesItem | null>(null);
+  const [player, setPlayer] = useState<PlayerSource | null>(null);
+
+  const quickPlay = (e: React.MouseEvent, x: VodStream | SeriesItem) => {
+    e.stopPropagation();
+    if (!activeAccount) return;
+    if (kind === "vod") {
+      const v = x as VodStream;
+      setPlayer({
+        url: buildVodStreamUrl(activeAccount, v.stream_id),
+        title: v.name,
+      });
+    } else {
+      // Series quick-play opens details (needs episode selection)
+      setSelected(x);
+    }
+  };
 
   // Preload BOTH vod + series in parallel — eliminates lag when switching tabs.
   useEffect(() => {
