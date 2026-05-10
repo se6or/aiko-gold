@@ -22,13 +22,24 @@ export function LoginScreen() {
   const [mode, setMode] = useState<"list" | "new">(
     accounts.length ? "list" : "new"
   );
-  const [form, setForm] = useState({
-    name: "",
-    server: "",
-    username: "",
-    password: "",
+  const DRAFT_KEY = "aiko:login-draft";
+  const [form, setForm] = useState(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        return { name: "", server: "", username: "", password: "", ...JSON.parse(raw) };
+      }
+    } catch { /* ignore */ }
+    return { name: "", server: "", username: "", password: "" };
   });
   const [showPw, setShowPw] = useState(false);
+
+  // Auto-save the in-progress form so user doesn't lose data on reload
+  useEffect(() => {
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
+    } catch { /* ignore */ }
+  }, [form]);
 
   useEffect(() => {
     if (loginError) toast.error(loginError);
