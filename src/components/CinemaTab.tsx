@@ -228,18 +228,30 @@ export function CinemaTab() {
                       )}
                     </div>
                   )}
-                  <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/95 to-transparent opacity-0 group-hover:opacity-100 transition">
-                    <div className="flex items-center gap-1 text-xs text-white">
-                      <Play className="w-3 h-3 text-gold" />
-                      <span className="truncate">{x.name}</span>
+                  <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/95 to-transparent">
+                    <div className="text-[11px] font-bold truncate text-white">
+                      {x.name}
                     </div>
                   </div>
+                  {/* Quick play button */}
+                  <span
+                    role="button"
+                    aria-label={`Play ${x.name}`}
+                    onClick={(e) => quickPlay(e, x)}
+                    className="absolute top-2 end-2 w-9 h-9 rounded-full gold-bg grid place-items-center shadow-gold opacity-90 hover:scale-110 active:scale-95 transition"
+                  >
+                    <Play className="w-4 h-4 text-black fill-black ms-0.5" />
+                  </span>
                 </button>
               );
             })}
           </div>
         )}
       </div>
+
+      {player && (
+        <VideoPlayer source={player} onClose={() => setPlayer(null)} />
+      )}
 
       {selected && (
         <DetailsScreen
