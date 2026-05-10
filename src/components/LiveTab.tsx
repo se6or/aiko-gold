@@ -6,7 +6,7 @@ import {
   Category,
   buildLiveStreamUrl,
 } from "@/lib/xtream";
-import { Tv } from "lucide-react";
+import { Tv, Play } from "lucide-react";
 import { VideoPlayer, PlayerSource } from "@/components/VideoPlayer";
 import { SearchBar } from "@/components/SearchBar";
 import { toast } from "sonner";
