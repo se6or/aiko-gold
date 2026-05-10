@@ -57,17 +57,16 @@ Deno.serve(async (req) => {
       );
     }
 
-    const text = await upstream.text();
-    let data: unknown;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      data = { raw: text };
-    }
-
-    return new Response(JSON.stringify(data), {
+    // Stream the response body through to avoid loading huge payloads into memory
+    // (Xtream get_live_streams / get_vod_streams can be many MB and trigger
+    // WORKER_RESOURCE_LIMIT if buffered + re-stringified).
+    return new Response(upstream.body, {
       status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: {
+        ...corsHeaders,
+        "Content-Type":
+          upstream.headers.get("Content-Type") || "application/json",
+      },
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
