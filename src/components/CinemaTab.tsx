@@ -6,8 +6,10 @@ import {
   VodStream,
   SeriesItem,
   Category,
+  buildVodStreamUrl,
 } from "@/lib/xtream";
 import { DetailsScreen } from "@/components/DetailsScreen";
+import { VideoPlayer, PlayerSource } from "@/components/VideoPlayer";
 import { SearchBar } from "@/components/SearchBar";
 import { toast } from "sonner";
 
@@ -24,6 +26,22 @@ export function CinemaTab() {
   const [activeCat, setActiveCat] = useState<string>("all");
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<VodStream | SeriesItem | null>(null);
+  const [player, setPlayer] = useState<PlayerSource | null>(null);
+
+  const quickPlay = (e: React.MouseEvent, x: VodStream | SeriesItem) => {
+    e.stopPropagation();
+    if (!activeAccount) return;
+    if (kind === "vod") {
+      const v = x as VodStream;
+      setPlayer({
+        url: buildVodStreamUrl(activeAccount, v.stream_id),
+        title: v.name,
+      });
+    } else {
+      // Series quick-play opens details (needs episode selection)
+      setSelected(x);
+    }
+  };
 
   // Preload BOTH vod + series in parallel — eliminates lag when switching tabs.
   useEffect(() => {
@@ -210,18 +228,30 @@ export function CinemaTab() {
                       )}
                     </div>
                   )}
-                  <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/95 to-transparent opacity-0 group-hover:opacity-100 transition">
-                    <div className="flex items-center gap-1 text-xs text-white">
-                      <Play className="w-3 h-3 text-gold" />
-                      <span className="truncate">{x.name}</span>
+                  <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/95 to-transparent">
+                    <div className="text-[11px] font-bold truncate text-white">
+                      {x.name}
                     </div>
                   </div>
+                  {/* Quick play button */}
+                  <span
+                    role="button"
+                    aria-label={`Play ${x.name}`}
+                    onClick={(e) => quickPlay(e, x)}
+                    className="absolute top-2 end-2 w-9 h-9 rounded-full gold-bg grid place-items-center shadow-gold opacity-90 hover:scale-110 active:scale-95 transition"
+                  >
+                    <Play className="w-4 h-4 text-black fill-black ms-0.5" />
+                  </span>
                 </button>
               );
             })}
           </div>
         )}
       </div>
+
+      {player && (
+        <VideoPlayer source={player} onClose={() => setPlayer(null)} />
+      )}
 
       {selected && (
         <DetailsScreen
