@@ -52,7 +52,11 @@ export function LoginScreen() {
       return;
     }
     const ok = await addAndLogin(form);
-    if (ok) toast.success("تم تسجيل الدخول");
+    if (ok) {
+      toast.success("تم تسجيل الدخول");
+      try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
+      setForm({ name: "", server: "", username: "", password: "" });
+    }
   };
 
   const toggleLang = () => {
