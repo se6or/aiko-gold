@@ -162,6 +162,15 @@ export function LiveTab() {
                     {ch.name}
                   </div>
                 </div>
+                {/* Quick play overlay */}
+                <span
+                  className="absolute inset-0 grid place-items-center opacity-0 group-hover:opacity-100 group-active:opacity-100 transition bg-black/40"
+                  aria-hidden
+                >
+                  <span className="w-12 h-12 rounded-full gold-bg grid place-items-center shadow-gold">
+                    <Play className="w-5 h-5 text-black fill-black ms-0.5" />
+                  </span>
+                </span>
               </button>
             ))}
           </div>
